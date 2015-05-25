@@ -18,13 +18,12 @@ def load_coord_data(files):
     elif nc.variables.has_key('pfull'):
         plev= np.squeeze(nc.variables['pfull'][:])
     else:
-        print "treating variable " + vari + " as a surface field"
         plev = None
     nc.close
 #     time= np.squeeze(nc.variables['time'][:])
     return lat, plev
 
-def extract_nc_data(files, nc_vari, tmp_array, error_limit):
+def extract_nc_data(files, nc_vari, tmp_array, model_size, error_limit):
     """Extracts data from a bunch of nc files
 
     Given a list of files pathname to a bunch of netcdf files, function, opens each files, places into a preallocated numpy array "tmp_array" into a larger array
@@ -43,7 +42,7 @@ def extract_nc_data(files, nc_vari, tmp_array, error_limit):
     print 'Number of Files', len(files)
     for k in range(len(files)):
         nc = netcdf_file(files[k],'r')
-        temp = np.squeeze(nc.variables[nc_variable_name][:])
+        temp = np.squeeze(nc.variables[nc_vari][:])
         temp = temp.copy() # make a copy because temp is a read only version 
         nc.close
         temp[temp>error_limit]= np.nan; # I'd like to make this code genreal for any variable, use dictionary here to assign different tolerances, maybe extract it from the netcdf file?
@@ -192,9 +191,9 @@ def write_nc(input_lat, input_latb, input_plev, input_array,  time_array, time_u
     times = rootgrp.createVariable('time','f8',('time',))
     if input_plev:
         plev = rootgrp.createVariable('plev','f8',('plev',))
-        tmp = rootgrp.createVariable(nc_vari,'f8',('time','plev','lat'))
+        tmp = rootgrp.createVariable(vari,'f8',('time','plev','lat'))
     else:
-        tmp = rootgrp.createVariable(nc_vari,'f8',('time','lat'))
+        tmp = rootgrp.createVariable(vari,'f8',('time','lat'))
     latitudes = rootgrp.createVariable('latitude','f8',('lat',))
     latitude_bnds = rootgrp.createVariable('latitude_bnds','f8',('latb',))
     # two dimensions unlimited.
@@ -209,7 +208,7 @@ def write_nc(input_lat, input_latb, input_plev, input_array,  time_array, time_u
         plev.units = 'hPa'
     else:
         pass
-    tmp.units = units_dict[nc_vari]
+    tmp.units = units_dict[vari]
     times.units = time_units
     times.calendar = time_cal
     

@@ -3,7 +3,7 @@ from nc_data import *
 
 model_list = ['CanAM4'] #,'CNRM-AM6', 'CNRM-CM5', 'MIROC5', 'HadGEM2-A', 'MPI-ESM-LR', 'MRI-CGCM3', 'GFDL-HIRAM', 'CESM-CAM5.1-FV2']
 freq_list = ['mon']
-experi_list = ['convoffamip4K'] #,'convoffamip4xCO2'] #['convoffamip'] #,
+experi_list = ['convoffamip'] #,'convoffamip4xCO2'] #['convoffamip'] #,
 realm_list = ['atmos']
 vari_list = ['ua']#,'va','ta','hur','hus']
 mount = 'mountpoint3'
@@ -57,7 +57,7 @@ for i1, experi in enumerate(experi_list):
                         print 'This is the' + model
                         nc_file = vari + '_' + freq + '_' + experi + '_SPOOKIE_interp.nc'
 
-                        write_nc(lat_common, latb_common, plev_common, temp_array_interp, time_array, time_units, time_cal, save_path + '/' + nc_file, model_size, experi, freq, realm, vari, model)
+                        write_nc(lat_common, latb_common, plev_common, tmp_array_interp, time_array, time_units, time_cal, save_path + '/' + nc_file, model_size, experi, freq, realm, vari, model)
                         print '.nc written for ' + experi + ' ' + freq + ' '+ realm + ' '+ vari + ' '+ model
                     else: 
                         pass
