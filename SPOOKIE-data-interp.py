@@ -18,7 +18,7 @@ for i1, experi in enumerate(experi_list):
                         files = get_SPOOKIE_filepath(experi, freq, realm, vari, model, mount)
                         plev_common = [100000, 92500, 85000, 70000, 60000, 50000, 40000, 30000, 25000, 20000, 15000, 10000, 7000, 5000, 3000, 2000, 1000]
                         latb_common= np.linspace(-90,90,65);
-                        lat_common = 0.5*(3*latb[0]-latb[1])+np.cumsum(np.diff(latb));
+                        lat_common = 0.5*(3*latb_common[0]-latb_common[1])+np.cumsum(np.diff(latb_common));
 
                         time_init= np.empty([1]) # initalise newtemp with the correct dimensions
                         time_units = []
