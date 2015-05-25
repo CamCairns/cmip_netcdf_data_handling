@@ -138,7 +138,7 @@ The function uses the griddata function, this allows NaNs, (particularly boundar
 
     return array_interp
         
-def write_nc(input_lat, input_latb, input_plev, input_array,  time_array, time_units, time_cal, save_path, nc_vari):
+def write_nc(input_lat, input_latb, input_plev, input_array,  time_array, time_units, time_cal, save_path, model_size, experi, freq, realm, vari, model):
 
     """ Writes the zonal mean data that has been extracted out as a netcdf file, saves in a new directory structure
 
@@ -150,8 +150,6 @@ def write_nc(input_lat, input_latb, input_plev, input_array,  time_array, time_u
 
     Raises:
     """
-    global model, freq, experi, realm, vari
-
     units_dict = {'ua': 'm/s', 'va': 'm/s', 'uas': 'm/s', 'vas': 'm/s', 'ta': 'K', 'tas': 'K', 'hur': '%', 'hus': '1'}
     # Initiate NETCDF4
     rootgrp = Dataset(save_path, 'w', format='NETCDF4')
@@ -168,7 +166,7 @@ def write_nc(input_lat, input_latb, input_plev, input_array,  time_array, time_u
     latitudes = rootgrp.createVariable('latitude','f8',('lat',))
     latitude_bnds = rootgrp.createVariable('latitude_bnds','f8',('latb',))
     # two dimensions unlimited.
-    tmp = rootgrp.createVariable(nc_vari,'f8',('time','plev','lat'))
+    tmp = rootgrp.createVariable(vari,'f8',('time','plev','lat'))
 
     # Attributes for nc file
     import time
@@ -177,16 +175,16 @@ def write_nc(input_lat, input_latb, input_plev, input_array,  time_array, time_u
     rootgrp.source = 'Cameron Cairns; email: cam.cairns1@gmail.com'
     latitudes.units = 'degrees north'
     plev.units = 'hPa'
-    tmp.units = units_dict[nc_vari]
+    tmp.units = units_dict[vari]
     times.units = time_units
     times.calendar = time_cal
     
     # Write Data
-    latitudes[:] = lat_common
-    latitude_bnds[:] = latb_common
-    plev[:] = plev_common
+    latitudes[:] = input_lat
+    latitude_bnds[:] = input_latb
+    plev[:] = input_plev
     print 'Input_array size)', np.shape(input_array)
-    tmp[0:model_size,0:len(plev_common),0:len(lat_common)] = input_array
+    tmp[0:model_size,0:len(input_plev),0:len(input_lat)] = input_array
     print 'tmp shape after adding data = ', tmp.shape
 
     rootgrp.close()
