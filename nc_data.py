@@ -86,8 +86,8 @@ def extract_nc_time(files, tmp_array):
         temp = np.squeeze(nc.variables['time'][:])
         temp_copy = temp.copy()
         nc.close
-        tmp_array[model_size:model_size+np.size(temp,0)] = temp
-        model_size = model_size + np.size(temp,0)
+        tmp_array[model_size:model_size+np.size(temp)] = temp_copy
+        model_size = model_size + np.size(temp_copy)
     return tmp_array
 
 
