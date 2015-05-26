@@ -7,6 +7,20 @@ import os
 import errno
 
 def load_coord_data(files):
+    """Extracts coordinate data from a bunch of nc files
+
+    Given a list of file pathnames the function takes the first filename and extracts lat and pressure (if it exists). 
+    Currently the function looks for pressure levels to be named either 'plev', 'lev' or 'pfull' and if found sets plev_flag = 1. If it does not find any field with this title it 
+    assumes the data is a surface field (eg. tas, uas etc.) and the plev_flag = 1. Plev_flag is used in other functions.
+
+    Args:
+        files: list of pathways to netcdf variables
+    
+    Returns
+        lat: A vector of the lat values
+        plev: A vector of pressure level values (set to None if no pressure dimension exists)
+        plev_flag: =1 if plev exists, =0 otherwise
+    """
     nc = netcdf_file(files[0])
     if nc.variables.has_key('lat'):
         lat= np.squeeze(nc.variables['lat'][:])
@@ -64,10 +78,7 @@ def extract_nc_time(files, tmp_array):
 
     Returns:
         A numpy array of all the netcdf files concatenated together
-
-    Raises:
     """
-
     model_size = 0
     for k in range(len(files)):
         print 'Extracting file number %d of %d' % (k+1, np.size(files))
@@ -140,7 +151,6 @@ The function uses the griddata function, this allows NaNs, (particularly boundar
 
     Raises:
     """
-
     if plev_flag:
         array_interp = np.empty([np.size(array,0), len(plev_new), len(lat_new)])
         xold, yold = np.meshgrid(lat_old,plev_old);
@@ -165,16 +175,13 @@ The function uses the griddata function, this allows NaNs, (particularly boundar
     return array_interp
         
 def write_nc(input_lat, input_latb, input_plev, plev_flag, input_array,  time_array, time_units, time_cal, save_path, model_size, experi, freq, realm, vari, model):
-
     """ Writes the zonal mean data that has been extracted out as a netcdf file, saves in a new directory structure
 
         files: list of pathways to netcdf variables
         tmp_array: An preallocated numpy vector of appropriate length
 
     Returns:
-        A numpy array of all the netcdf files concatenated together
-
-    Raises:
+        Nothing, a netcdf file is written at the path specified at save_path
     """
     units_dict = {'ua': 'm/s', 'va': 'm/s', 'uas': 'm/s', 'vas': 'm/s', 'ta': 'K', 'tas': 'K', 'hur': '%', 'hus': '1'}
     # Initiate NETCDF4
@@ -225,6 +232,11 @@ def write_nc(input_lat, input_latb, input_plev, plev_flag, input_array,  time_ar
     rootgrp.close()
 
 def mkdir_p(path):
+    """Checks to see if a directory path exists
+    
+    Args:
+        path: directory path whose existence needs to be checked.
+    """
     try:
         os.makedirs(path)
     except OSError as exc: # Python >2.5
