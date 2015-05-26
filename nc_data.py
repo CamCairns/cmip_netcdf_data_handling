@@ -110,12 +110,13 @@ def find_model_size(files,nc_variable_name):
 
     return model_size
     
-def get_SPOOKIE_filepath(experi,freq,realm,vari,model,mount):
+def get_SPOOKIE_filepath(category,experi,freq,realm,vari,model,mount):
     """Gets a list of the SPOOKIE filepaths from the directory structure I have created,
     
     Directory structure has form SPOOKIE/experi/freq/realm/vari/model/. Operates using a directory mounted up using FUSE OSX
     
     Args:
+        category: AMIP, SPOOKIE
         experi: experiment (string)
         freq: frequency (string)
         realm: realm (string)
@@ -126,7 +127,7 @@ def get_SPOOKIE_filepath(experi,freq,realm,vari,model,mount):
     Returns:
         A list of file pathnames
     """
-    location = '/Users/camcairns/' + mount + '/SPOOKIE/'
+    location = '/Users/camcairns/' + mount + '/' + category + '/'
     files = []
     print "Looking for netcdfs here: \n", location + str(experi) + '/' + str(freq) + '/' + str(realm) + '/' + str(vari) + '/' + str(model) + '/r1i1p1/*.nc'
     files = glob.glob(location + str(experi) + '/' + str(freq) + '/' + str(realm) + '/' + str(vari) + '/' + str(model) + '/r1i1p1/*.nc')

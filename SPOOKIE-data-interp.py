@@ -6,6 +6,7 @@ freq_list = ['mon']
 experi_list = ['convoffamip'] #,'convoffamip4xCO2'] #['convoffamip'] #,
 realm_list = ['atmos']
 vari_list = ['uas']#,'va','ta','hur','hus']
+category = 'AMIP' # SPOOKIE
 mount = 'mountpoint3'
 
 for i1, experi in enumerate(experi_list):
@@ -14,7 +15,7 @@ for i1, experi in enumerate(experi_list):
             for i4, vari in enumerate(vari_list):
                 for i5, model in enumerate(model_list):
                     print experi, freq, realm, vari, model
-                    files = get_SPOOKIE_filepath(experi, freq, realm, vari, model, mount)
+                    files = get_SPOOKIE_filepath(category,experi, freq, realm, vari, model, mount)
                     if files:
                         plev_common = [100000, 92500, 85000, 70000, 60000, 50000, 40000, 30000, 25000, 20000, 15000, 10000, 7000, 5000, 3000, 2000, 1000]
                         latb_common= np.linspace(-90,90,65);
@@ -50,10 +51,10 @@ for i1, experi in enumerate(experi_list):
                         nc.close
                     
                         # Make directory path                    
-                        save_path = '/Users/camcairns/' + mount + '/SPOOKIE_interp/' + experi + '/' + freq + '/' + realm + '/' + vari + '/' + model
+                        save_path = '/Users/camcairns/' + mount + '/' + category + '_interp/' + experi + '/' + freq + '/' + realm + '/' + vari + '/' + model
                         mkdir_p(save_path)
                         # Write nc files
-                        nc_file = vari + '_' + freq + '_' + experi + '_SPOOKIE_interp.nc'
+                        nc_file = vari + '_' + freq + '_' + experi + '_' + category + '_interp.nc'
 
                         write_nc(lat_common, latb_common, plev_common, plev_flag, tmp_array_interp, time_array, time_units, time_cal, save_path + '/' + nc_file, model_size, experi, freq, realm, vari, model)
                         print 'Netcdf file written for /%s/%s/%s/%s/%s' % (experi, freq, realm, vari, model)
