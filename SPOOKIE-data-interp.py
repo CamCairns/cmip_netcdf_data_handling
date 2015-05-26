@@ -26,15 +26,15 @@ for i1, experi in enumerate(experi_list):
                         time_cal = []
                     
                         lat, plev, plev_flag = load_coord_data(files)
-                        print "Plev is: ", plev
                         model_size = find_model_size(files, vari) # find the total time length of the model, use to preallocate a numpy array
-                        print 'model_size', model_size
                     
                         if plev_flag:
                             tmp_array = np.empty([model_size,len(plev),len(lat)])*np.nan;
+                            print 'The size of model %s is (%d, %d, %d)' % (model, model_size, np.size(plev), np.size(lat))
                         else:
                             plev_common = None
                             tmp_array = np.empty([model_size,len(lat)])*np.nan;
+                            print 'The size of the %s field in %s is (%d, %d)' % (vari, model, model_size, lat.size)
                     
                         #FIELD DATA EXTRACTION AND CONCATENATION    
                         tmp_array = extract_nc_data(files, vari, tmp_array, model_size, 1.0e8);
@@ -54,10 +54,9 @@ for i1, experi in enumerate(experi_list):
                         save_path = '/Users/camcairns/' + mount + '/SPOOKIE_interp/' + experi + '/' + freq + '/' + realm + '/' + vari + '/' + model
                         mkdir_p(save_path)
                         # Write nc files
-                        print 'This is the' + model
                         nc_file = vari + '_' + freq + '_' + experi + '_SPOOKIE_interp.nc'
 
                         write_nc(lat_common, latb_common, plev_common, plev_flag, tmp_array_interp, time_array, time_units, time_cal, save_path + '/' + nc_file, model_size, experi, freq, realm, vari, model)
-                        print '.nc written for ' + experi + ' ' + freq + ' '+ realm + ' '+ vari + ' '+ model
+                        print 'Netcdf file written for /%s/%s/%s/%s/%s' % (experi, freq, realm, vari, model)
                     else: 
-                        pass
+                        print 'No netcdf files found in that location!'

@@ -43,7 +43,7 @@ def extract_nc_data(files, nc_vari, tmp_array, model_size, error_limit):
         A numpy array of all the netcdf files concatenated together
     """
     model_size = 0
-    print 'Number of Files', len(files)
+    print 'The model consists of %d .nc file(s)' % np.size(files)
     for k in range(len(files)):
         nc = netcdf_file(files[k],'r')
         temp = np.squeeze(nc.variables[nc_vari][:])
@@ -51,8 +51,6 @@ def extract_nc_data(files, nc_vari, tmp_array, model_size, error_limit):
         nc.close
         temp[temp>error_limit]= np.nan; # I'd like to make this code genreal for any variable, use dictionary here to assign different tolerances, maybe extract it from the netcdf file?
         temp = np.squeeze(np.nanmean(temp,len(np.shape(temp))-1)); # Take a zonal mean, id like to make this more general as well, automatically pick out the lon dimension?
-        print 'temp_file size', np.size(temp,0)
-        print 'model_size', model_size
         tmp_array[model_size:model_size+np.size(temp,0),...] = temp
         model_size = model_size + np.size(temp,0)
     return tmp_array
@@ -72,7 +70,7 @@ def extract_nc_time(files, tmp_array):
 
     model_size = 0
     for k in range(len(files)):
-        print 'file', k
+        print 'Extracting file number %d of %d' % (k+1, np.size(files))
         nc = netcdf_file(files[k])
         temp = np.squeeze(nc.variables['time'][:])
         temp_copy = temp.copy()
@@ -224,8 +222,6 @@ def write_nc(input_lat, input_latb, input_plev, plev_flag, input_array,  time_ar
         tmp[0:model_size,0:len(input_plev),0:len(input_lat)] = input_array
     else: 
         tmp[0:model_size,0:len(input_lat)] = input_array
-    print 'tmp shape after adding data = ', tmp.shape
-    
     rootgrp.close()
 
 def mkdir_p(path):
