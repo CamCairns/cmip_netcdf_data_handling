@@ -37,7 +37,7 @@ for i1, experi in enumerate(experi_list):
                             print 'The size of the %s field in %s is (%d, %d)' % (vari, model, model_size, lat.size)
                     
                         #FIELD DATA EXTRACTION AND CONCATENATION    
-                        tmp_array = extract_nc_data(files, vari, tmp_array, model_size, 1.0e8);
+                        tmp_array = extract_nc_data(files, vari, tmp_array);
 
                         #INTERPOLATE ONTO COMMON GRID
                         tmp_array_interp = interp_data(lat, plev, plev_flag, lat_common, plev_common, tmp_array)                    

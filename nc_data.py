@@ -41,7 +41,7 @@ def load_coord_data(files):
 #     time= np.squeeze(nc.variables['time'][:])
     return lat, plev, plev_flag
 
-def extract_nc_data(files, nc_vari, tmp_array, model_size, error_limit):
+def extract_nc_data(files, nc_vari, tmp_array, error_limit=1.0e8,zonal_mean=True):
     """Extracts data from a bunch of nc files
 
     Given a list of files pathname to a bunch of netcdf files, function, opens each files, places into a preallocated numpy array "tmp_array" into a larger array
@@ -56,17 +56,18 @@ def extract_nc_data(files, nc_vari, tmp_array, model_size, error_limit):
     Returns:
         A numpy array of all the netcdf files concatenated together
     """
-    model_size = 0
+    model_size_tkr = 0
     print 'The model consists of %d .nc file(s)' % np.size(files)
     for k in range(len(files)):
         nc = netcdf_file(files[k],'r')
         temp = np.squeeze(nc.variables[nc_vari][:])
         temp = temp.copy() # make a copy because temp is a read only version 
         nc.close
-        temp[temp>error_limit]= np.nan; # I'd like to make this code genreal for any variable, use dictionary here to assign different tolerances, maybe extract it from the netcdf file?
-        temp = np.squeeze(np.nanmean(temp,len(np.shape(temp))-1)); # Take a zonal mean, id like to make this more general as well, automatically pick out the lon dimension?
-        tmp_array[model_size:model_size+np.size(temp,0),...] = temp
-        model_size = model_size + np.size(temp,0)
+        if zonal_mean:
+            temp[temp>error_limit]= np.nan; # I'd like to make this code genreal for any variable, use dictionary here to assign different tolerances, maybe extract it from the netcdf file?
+            temp = np.squeeze(np.nanmean(temp,len(np.shape(temp))-1)); # Take a zonal mean, id like to make this more general as well, automatically pick out the lon dimension?
+        tmp_array[model_size_tkr:model_size_tkr+np.size(temp,0),...] = temp
+        model_size_tkr = model_size_tkr + np.size(temp,0)
     return tmp_array
     
 def extract_nc_time(files, tmp_array):
