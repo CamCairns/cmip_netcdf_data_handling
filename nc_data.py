@@ -111,7 +111,7 @@ def find_model_size(files,nc_variable_name):
 
     return model_size
     
-def get_SPOOKIE_filepath(category,experi,freq,realm,vari,model,mount):
+def get_filepath(category,experi,freq,realm,vari,model,mount):
     """Gets a list of the SPOOKIE filepaths from the directory structure I have created,
     
     Directory structure has form SPOOKIE/experi/freq/realm/vari/model/. Operates using a directory mounted up using FUSE OSX

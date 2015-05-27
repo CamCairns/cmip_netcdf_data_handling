@@ -3,9 +3,9 @@ from nc_data import *
 
 model_list = ['CanAM4','CNRM-AM6', 'CNRM-CM5', 'MIROC5', 'HadGEM2-A', 'MPI-ESM-LR', 'MRI-CGCM3', 'GFDL-HIRAM', 'CESM1-CAM5'] #'CESM-CAM5.1-FV2'
 freq_list = ['mon']
-experi_list = ['amip4K', 'amip4xCO2'] #['convoffaqua4K','convoffaqua4xCO2','convoffaquaControl'] #,'convoffamip4xCO2'] #
+experi_list = ['aqua4xCO2', 'aquaControl'] #['convoffaqua4K','convoffaqua4xCO2','convoffaquaControl'] #,'convoffamip4xCO2'] #
 realm_list = ['atmos']
-vari_list = ['ua','uas','va','vas','ta','tas','hur','hus']
+vari_list = ['ua','uas','va','vas','ta','tas','hur','hus']#
 category = 'AMIP' # SPOOKIE
 mount = 'mountpoint3'
 
@@ -15,7 +15,7 @@ for i1, experi in enumerate(experi_list):
             for i4, vari in enumerate(vari_list):
                 for i5, model in enumerate(model_list):
                     print experi, freq, realm, vari, model
-                    files = get_SPOOKIE_filepath(category,experi, freq, realm, vari, model, mount)
+                    files = get_filepath(category,experi, freq, realm, vari, model, mount)
                     if files:
                         plev_common = [100000, 92500, 85000, 70000, 60000, 50000, 40000, 30000, 25000, 20000, 15000, 10000, 7000, 5000, 3000, 2000, 1000]
                         latb_common= np.linspace(-90,90,65);
