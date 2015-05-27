@@ -47,6 +47,36 @@ def load_coord_data(files):
 
     return lat, plev, plev_flag
 
+def empty_array_generator(files, time_length, model_dim=1):
+    """Extracts coord data and preallocates a NaN array of appropriates size
+
+    Given a list of file pathnames a time_length and (optinal) a 4th model dimension the function generates a NaN array of the right size [time_length, plev, lat, model_dim].
+    If no model dimension is given the array takes on the shape [time_length, plev, lat]. 
+
+    Args:
+        files: list of pathways to netcdf variables
+        time_length: an integer value for how long the time dim of the array should be
+        model_dim (optional): the size of the 4th dimension, if none is provided, no 4th dimension is produced
+    
+    Returns
+        nan_array = a NaN array of appropriate size, used for data preallocation
+        lat: A vector of the lat values
+        plev: A vector of pressure level values (set to None if no pressure dimension exists)
+        plev_flag: =1 if plev exists, =0 otherwise
+    """
+    # We assume here that the [lat plev] size of all models for a particular variable are equal/consistent!
+    if files:
+        lat, plev, plev_flag = load_coord_data(files)
+        if plev_flag:
+            nan_array = np.squeeze(np.empty([time_length, np.size(plev), np.size(lat), model_dim])*np.nan)
+        else: 
+            nan_array = np.squeeze(np.empty([time_length, np.size(lat), model_dim])*np.nan)
+        print np.shape(output_array)
+    else:
+        nan_array = None
+        print "No file found at that location"
+    return nan_array, lat, plev, plev_flag
+
 def extract_nc_data(files, nc_vari, tmp_array, error_limit=1.0e8,zonal_mean=True):
     """Extracts data from a bunch of nc files
 

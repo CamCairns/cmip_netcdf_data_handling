@@ -25,17 +25,11 @@ for i1, experi in enumerate(experi_list):
                         time_units = []
                         time_cal = []
                     
-                        lat, plev, plev_flag = load_coord_data(files)
                         model_size = find_model_size(files, vari) # find the total time length of the model, use to preallocate a numpy array
-                    
-                        if plev_flag:
-                            tmp_array = np.empty([model_size,len(plev),len(lat)])*np.nan;
-                            print 'The size of model %s is (%d, %d, %d)' % (model, model_size, np.size(plev), np.size(lat))
-                        else:
-                            plev_common = None
-                            tmp_array = np.empty([model_size,len(lat)])*np.nan;
-                            print 'The size of the %s field in %s is (%d, %d)' % (vari, model, model_size, lat.size)
-                    
+                        
+                        # PREALLOCATE EMPTY ARRAY
+                        tmp_array, lat, plev, plev_flag = empty_array_generator(files, model_size)
+
                         #FIELD DATA EXTRACTION AND CONCATENATION    
                         tmp_array = extract_nc_data(files, vari, tmp_array);
 
@@ -45,7 +39,7 @@ for i1, experi in enumerate(experi_list):
                         # TIME DATA EXTRACTION
                         tmp_array = np.empty([model_size])*np.nan;
                         time_array = extract_nc_time(files, tmp_array)
-                        nc = netcdf_file(files[0])
+                        nc = Dataset(files[0])
                         time_units = np.append(time_units,nc.variables['time'].units)
                         time_cal = np.append(time_cal,nc.variables['time'].calendar)
                         nc.close
