@@ -23,7 +23,7 @@ def load_coord_data(files):
     nc = Dataset(files[0])
     if nc.variables.has_key('lat'):
         lat= np.squeeze(nc.variables['lat'][:])
-    if nc.variables.has_key('latitude'):
+    elif nc.variables.has_key('latitude'):
         lat= np.squeeze(nc.variables['latitude'][:])
     else:
         print "No latitude coordinate vector found"
