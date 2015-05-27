@@ -23,6 +23,11 @@ def load_coord_data(files):
     nc = Dataset(files[0])
     if nc.variables.has_key('lat'):
         lat= np.squeeze(nc.variables['lat'][:])
+    if nc.variables.has_key('latitude'):
+        lat= np.squeeze(nc.variables['latitude'][:])
+    else:
+        print "No latitude coordinate vector found"
+        lat = None
 
     if nc.variables.has_key('plev'):
         plev= np.squeeze(nc.variables['plev'][:]) # name difference plev, lev
@@ -34,10 +39,12 @@ def load_coord_data(files):
         plev= np.squeeze(nc.variables['pfull'][:])
         plev_flag = 1
     else:
+        print "No pressure coordinate vector found"
         plev = None
         plev_flag = 0
     nc.close
 #     time= np.squeeze(nc.variables['time'][:])
+
     return lat, plev, plev_flag
 
 def extract_nc_data(files, nc_vari, tmp_array, error_limit=1.0e8,zonal_mean=True):
