@@ -267,6 +267,7 @@ def write_nc(input_lat, input_latb, input_plev, plev_flag, input_array,  time_ar
     # Write Data
     latitudes[:] = input_lat
     latitude_bnds[:] = input_latb
+    times[:] = time_array
     if plev_flag:
         plev[:] = input_plev
         tmp[0:model_size,0:len(input_plev),0:len(input_lat)] = input_array
