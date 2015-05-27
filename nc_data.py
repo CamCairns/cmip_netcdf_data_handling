@@ -167,10 +167,10 @@ def get_filepath(category,experi,freq,realm,vari,model,ensemble='r1i1p1',mount_d
     location = '/Users/camcairns/' + mount_dir + '/' + category + '/'
     files = []
     if ensemble:
-        print "Looking for netcdfs here: \n", location + str(experi) + '/' + str(freq) + '/' + str(realm) + '/' + str(vari) + '/' + str(model) + '/' + str(ensemble) + '/*.nc'
+#         print "Looking for netcdfs here: \n", location + str(experi) + '/' + str(freq) + '/' + str(realm) + '/' + str(vari) + '/' + str(model) + '/' + str(ensemble) + '/*.nc'
         files = glob.glob(location + str(experi) + '/' + str(freq) + '/' + str(realm) + '/' + str(vari) + '/' + str(model) + '/' + str(ensemble) + '/*.nc')
     else:
-        print "Looking for netcdfs here: \n", location + str(experi) + '/' + str(freq) + '/' + str(realm) + '/' + str(vari) + '/' + str(model) + '/*.nc'
+#         print "Looking for netcdfs here: \n", location + str(experi) + '/' + str(freq) + '/' + str(realm) + '/' + str(vari) + '/' + str(model) + '/*.nc'
         files = glob.glob(location + str(experi) + '/' + str(freq) + '/' + str(realm) + '/' + str(vari) + '/' + str(model) + '/*.nc')
 
     
