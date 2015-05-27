@@ -47,6 +47,30 @@ def load_coord_data(files):
 
     return lat, plev, plev_flag
 
+def extract_nc_time(files, model_size):
+    """  Gets time, time from a bunch of netcdf files and concatenates them together
+
+    Args:
+        files: list of pathways to netcdf variables
+        model_size: The timelength of the data, used to preallocate an empty array
+
+    Returns:
+        A 1D np array of all the time values concatenated together
+    """
+    model_size_tkr = 0
+    time_vector = np.empty([model_size])*np.nan
+    for k in range(len(files)):
+        nc = Dataset(files[k],'r')
+        if k==0:
+            time_units = nc.variables['time'].units
+            time_cal = nc.variables['time'].calendar
+        time = np.squeeze(nc.variables['time'][:])
+        time = time.copy() # make a copy because time is a read only version 
+        nc.close
+        time_vector[model_size_tkr:model_size_tkr+len(time)] = time
+        model_size_tkr = model_size_tkr + len(time)
+    return time_vector, time_units, time_cal
+
 def empty_array_generator(files, time_length, model_dim=1):
     """Extracts coord data and preallocates a NaN array of appropriates size
 
@@ -104,28 +128,6 @@ def extract_nc_data(files, nc_vari, tmp_array, error_limit=1.0e8,zonal_mean=True
         tmp_array[model_size_tkr:model_size_tkr+np.size(temp,0),...] = temp
         model_size_tkr = model_size_tkr + np.size(temp,0)
     return tmp_array
-    
-def extract_nc_time(files, tmp_array):
-
-    """  Gets time, time from a bunch of netcdf files and concatenates them together
-
-        files: list of pathways to netcdf variables
-        tmp_array: An preallocated numpy vector of appropriate length
-
-    Returns:
-        A numpy array of all the netcdf files concatenated together
-    """
-    model_size = 0
-    for k in range(len(files)):
-        print 'Extracting file number %d of %d' % (k+1, np.size(files))
-        nc = Dataset(files[k])
-        temp = np.squeeze(nc.variables['time'][:])
-        temp_copy = temp.copy()
-        nc.close
-        tmp_array[model_size:model_size+np.size(temp)] = temp_copy
-        model_size = model_size + np.size(temp_copy)
-    return tmp_array
-
 
 def find_model_size(files,nc_variable_name):
     """Finds the total time length of a group of netcdf files
@@ -217,7 +219,7 @@ The function uses the griddata function, this allows NaNs, (particularly boundar
 
     return array_interp
         
-def write_nc(input_lat, input_latb, input_plev, plev_flag, input_array,  time_array, time_units, time_cal, save_path, model_size, experi, freq, realm, vari, model):
+def write_nc(input_lat, input_latb, input_plev, plev_flag, input_array, time_vector, time_units, time_cal, save_path, model_size, experi, freq, realm, vari, model):
     """ Writes the zonal mean data that has been extracted out as a netcdf file, saves in a new directory structure
 
         files: list of pathways to netcdf variables
@@ -267,7 +269,7 @@ def write_nc(input_lat, input_latb, input_plev, plev_flag, input_array,  time_ar
     # Write Data
     latitudes[:] = input_lat
     latitude_bnds[:] = input_latb
-    times[:] = time_array
+    times[:] = time_vector
     if plev_flag:
         plev[:] = input_plev
         tmp[0:model_size,0:len(input_plev),0:len(input_lat)] = input_array

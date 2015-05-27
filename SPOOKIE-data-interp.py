@@ -37,20 +37,15 @@ for i1, experi in enumerate(experi_list):
                         tmp_array_interp = interp_data(lat, plev, plev_flag, lat_common, plev_common, tmp_array)                    
                     
                         # TIME DATA EXTRACTION
-                        tmp_array = np.empty([model_size])*np.nan;
-                        time_array = extract_nc_time(files, tmp_array)
-                        nc = Dataset(files[0])
-                        time_units = np.append(time_units,nc.variables['time'].units)
-                        time_cal = np.append(time_cal,nc.variables['time'].calendar)
-                        nc.close
-                    
+                        time_vector, time_units, time_cal = extract_nc_time(files, model_size)
+
                         # Make directory path                    
                         save_path = '/Users/camcairns/' + mount + '/' + category + '_interp/' + experi + '/' + freq + '/' + realm + '/' + vari + '/' + model
                         mkdir_p(save_path)
                         # Write nc files
                         nc_file = vari + '_' + freq + '_' + experi + '_' + category + '_interp.nc'
 
-                        write_nc(lat_common, latb_common, plev_common, plev_flag, tmp_array_interp, time_array, time_units, time_cal, save_path + '/' + nc_file, model_size, experi, freq, realm, vari, model)
+                        write_nc(lat_common, latb_common, plev_common, plev_flag, tmp_array_interp, time_vector, time_units, time_cal, save_path + '/' + nc_file, model_size, experi, freq, realm, vari, model)
                         print 'Netcdf file written for /%s/%s/%s/%s/%s' % (experi, freq, realm, vari, model)
                     else: 
                         print 'No netcdf files found in that location!'
