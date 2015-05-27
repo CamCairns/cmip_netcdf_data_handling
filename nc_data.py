@@ -111,7 +111,7 @@ def find_model_size(files,nc_variable_name):
 
     return model_size
     
-def get_filepath(category,experi,freq,realm,vari,model,mount):
+def get_filepath(category,experi,freq,realm,vari,model,ensemble='r1i1p1',mount_dir='mountpoint'):
     """Gets a list of the SPOOKIE filepaths from the directory structure I have created,
     
     Directory structure has form SPOOKIE/experi/freq/realm/vari/model/. Operates using a directory mounted up using FUSE OSX
@@ -123,15 +123,21 @@ def get_filepath(category,experi,freq,realm,vari,model,mount):
         realm: realm (string)
         vari: variable (string)
         model: model (string)
+        ensemble: ensemble number (string,optional)
         mount: mountpoint directory name
         
     Returns:
         A list of file pathnames
     """
-    location = '/Users/camcairns/' + mount + '/' + category + '/'
+    location = '/Users/camcairns/' + mount_dir + '/' + category + '/'
     files = []
-    print "Looking for netcdfs here: \n", location + str(experi) + '/' + str(freq) + '/' + str(realm) + '/' + str(vari) + '/' + str(model) + '/r1i1p1/*.nc'
-    files = glob.glob(location + str(experi) + '/' + str(freq) + '/' + str(realm) + '/' + str(vari) + '/' + str(model) + '/r1i1p1/*.nc')
+    if ensemble:
+        print "Looking for netcdfs here: \n", location + str(experi) + '/' + str(freq) + '/' + str(realm) + '/' + str(vari) + '/' + str(model) + '/' + str(ensemble) + '/*.nc'
+        files = glob.glob(location + str(experi) + '/' + str(freq) + '/' + str(realm) + '/' + str(vari) + '/' + str(model) + '/' + str(ensemble) + '/*.nc')
+    else:
+        print "Looking for netcdfs here: \n", location + str(experi) + '/' + str(freq) + '/' + str(realm) + '/' + str(vari) + '/' + str(model) + '/*.nc'
+        files = glob.glob(location + str(experi) + '/' + str(freq) + '/' + str(realm) + '/' + str(vari) + '/' + str(model) + '/*.nc')
+
     
     return files
 
