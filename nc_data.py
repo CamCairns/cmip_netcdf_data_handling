@@ -71,7 +71,6 @@ def empty_array_generator(files, time_length, model_dim=1):
             nan_array = np.squeeze(np.empty([time_length, np.size(plev), np.size(lat), model_dim])*np.nan)
         else: 
             nan_array = np.squeeze(np.empty([time_length, np.size(lat), model_dim])*np.nan)
-        print np.shape(output_array)
     else:
         nan_array = None
         print "No file found at that location"

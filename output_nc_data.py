@@ -1,5 +1,5 @@
 import numpy as np
-from nc_data import nc_data as nc
+import nc_data as nc
 
 time_length =  20 # max_length, min_length or some integer
 
@@ -22,7 +22,6 @@ def fetch_nc_data(category,experi, freq, realm, vari, model_list, ensemble=None,
         if files:
             model_size = nc.find_model_size(files,vari)
             tmp_array, lat, plev, plev_flag = nc.empty_array_generator(files, model_size)
-            print np.shape(tmp_array)
             tmp_array = nc.extract_nc_data(files, vari, tmp_array, zonal_mean=False)
             output_array[...,i1] = tmp_array[:time_length,...]
         else:
