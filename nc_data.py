@@ -203,11 +203,11 @@ def write_nc(input_lat, input_latb, input_plev, plev_flag, input_array,  time_ar
 
     # Set Dimensions
     if plev_flag:
-        plev = rootgrp.createDimension('plev', 17)
+        plev = rootgrp.createDimension('plev', len(input_plev))
     else:
         pass
-    lat = rootgrp.createDimension('lat', 64)
-    latb = rootgrp.createDimension('latb', 65)
+    lat = rootgrp.createDimension('lat', len(input_lat))
+    latb = rootgrp.createDimension('latb', len(input_latb))
     time = rootgrp.createDimension('time', None)
 
     # Set Variables
