@@ -1,4 +1,3 @@
-from scipy.io import netcdf_file
 from netCDF4 import Dataset
 from scipy.interpolate import griddata
 import numpy as np
@@ -21,7 +20,7 @@ def load_coord_data(files):
         plev: A vector of pressure level values (set to None if no pressure dimension exists)
         plev_flag: =1 if plev exists, =0 otherwise
     """
-    nc = netcdf_file(files[0])
+    nc = Dataset(files[0])
     if nc.variables.has_key('lat'):
         lat= np.squeeze(nc.variables['lat'][:])
 
@@ -59,7 +58,7 @@ def extract_nc_data(files, nc_vari, tmp_array, error_limit=1.0e8,zonal_mean=True
     model_size_tkr = 0
     print 'The model consists of %d .nc file(s)' % np.size(files)
     for k in range(len(files)):
-        nc = netcdf_file(files[k],'r')
+        nc = Dataset(files[k],'r')
         temp = np.squeeze(nc.variables[nc_vari][:])
         temp = temp.copy() # make a copy because temp is a read only version 
         nc.close
@@ -83,7 +82,7 @@ def extract_nc_time(files, tmp_array):
     model_size = 0
     for k in range(len(files)):
         print 'Extracting file number %d of %d' % (k+1, np.size(files))
-        nc = netcdf_file(files[k])
+        nc = Dataset(files[k])
         temp = np.squeeze(nc.variables['time'][:])
         temp_copy = temp.copy()
         nc.close
@@ -104,7 +103,7 @@ def find_model_size(files,nc_variable_name):
     """
     model_size=0;
     for k in range(len(files)):
-        nc = netcdf_file(files[k])
+        nc = Dataset(files[k])
         tmp = np.squeeze(nc.variables[nc_variable_name][:]) # loading dimensions backwards [time, pfull, lat, lon]
         model_size = model_size + np.size(tmp,0);
         nc.close
