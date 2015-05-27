@@ -217,8 +217,8 @@ def write_nc(input_lat, input_latb, input_plev, plev_flag, input_array,  time_ar
         tmp = rootgrp.createVariable(vari,'f8',('time','plev','lat'))
     else:
         tmp = rootgrp.createVariable(vari,'f8',('time','lat'))
-    latitudes = rootgrp.createVariable('latitude','f8',('lat',))
-    latitude_bnds = rootgrp.createVariable('latitude_bnds','f8',('latb',))
+    latitudes = rootgrp.createVariable('lat','f8',('lat',))
+    latitude_bnds = rootgrp.createVariable('lat_bnds','f8',('latb',))
     # two dimensions unlimited.
 
     # Attributes for nc file
