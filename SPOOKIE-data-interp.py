@@ -1,11 +1,11 @@
 # Main Program
 from nc_data import *
 
-model_list = ['CanAM4','CNRM-AM6', 'CNRM-CM5', 'MIROC5', 'HadGEM2-A', 'MPI-ESM-LR', 'MRI-CGCM3', 'GFDL-HIRAM', 'CESM1-CAM5'] #'CESM-CAM5.1-FV2'
+model_list = ['CanAM4','CNRM-AM6', 'CNRM-CM5', 'MIROC5', 'HadGEM2-A', 'MPI-ESM-LR', 'MRI-CGCM3', 'GFDL-HIRAM', 'CESM1-CAM5','CESM-CAM5.1-FV2']
 freq_list = ['mon']
-experi_list = ['aqua4xCO2', 'aquaControl'] #['convoffaqua4K','convoffaqua4xCO2','convoffaquaControl'] #,'convoffamip4xCO2'] #
+experi_list = ['amip'] #['aqua4xCO2', 'aquaControl'] #['convoffaqua4K','convoffaqua4xCO2','convoffaquaControl'] #,'convoffamip4xCO2'] #
 realm_list = ['atmos']
-vari_list = ['ua','uas','va','vas','ta','tas','hur','hus']#
+vari_list = ['ua','uas','va','vas','ta','tas','hur','hus']
 category = 'AMIP' # SPOOKIE
 mount = 'mountpoint3'
 
