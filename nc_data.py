@@ -4,6 +4,7 @@ import numpy as np
 import glob
 import os
 import errno
+from netcdftime import utime, datetime
 
 def load_coord_data(files):
     """Extracts coordinate data from a bunch of nc files
@@ -76,12 +77,15 @@ def empty_array_generator(files, time_length, model_dim=1,modulo=None):
 
     Given a list of file pathnames a time_length and (optinal) a 4th model dimension the function generates a NaN array of the right size [time_length, plev, lat, model_dim].
     If no model dimension is given the array takes on the shape [time_length, plev, lat]. 
+    
+    The modulo provision allows an empty array of size >= time_length to be gernerated such that S, the size of the actual array generated has the property S%modulo = 0 
+    (ie. it pads the array out by rounding up to the next largest whole multiple of modulo)
 
     Args:
         files: list of pathways to netcdf variables
         time_length: an integer value for how long the time dim of the array should be
         model_dim (optional): the size of the 4th dimension, if none is provided, no 4th dimension is produced
-    
+        modulo (optional): an integer value such that S%modulo = 0, where S is the size of the array generated. If modulo=None no padding is done.
     Returns
         nan_array = a NaN array of appropriate size, used for data preallocation
         lat: A vector of the lat values
@@ -90,16 +94,16 @@ def empty_array_generator(files, time_length, model_dim=1,modulo=None):
     """
     # We assume here that the [lat plev] size of all models for a particular variable are equal/consistent!
     if modulo:
-        pass
+        padding = (modulo - time_length%modulo)
     else:
-        modulo = time_length
+        padding = 0
 
     if files:
         lat, plev, plev_flag = load_coord_data(files)
         if plev_flag:
-            nan_array = np.squeeze(np.empty([time_length+time_length%modulo, np.size(plev), np.size(lat), model_dim])*np.nan)
+            nan_array = np.squeeze(np.empty([time_length + padding, np.size(plev), np.size(lat), model_dim])*np.nan)
         else: 
-            nan_array = np.squeeze(np.empty([time_length+ time_length%modulo, np.size(lat), model_dim])*np.nan)
+            nan_array = np.squeeze(np.empty([time_length + padding, np.size(lat), model_dim])*np.nan)
     else:
         nan_array = None
         print "No file found at that location"
@@ -294,3 +298,49 @@ def mkdir_p(path):
         if exc.errno == errno.EEXIST and os.path.isdir(path):
             pass
         else: raise
+
+def mod_subtract(a,b,N=12):
+    """Does subtraction in modulo N (default N=12)
+    Used in round_time
+    """
+    x = (a - b) % N
+    return x
+    
+def round_time(files, model_size,start_month=1):
+    """Finds how many months R need to be dropped to initialise each model at start_month
+    Function takes in netcdf time data and determines when the model run starts (most start at January (i.e month=1) but some modelling groups start on different months 
+    (the UKMO models tend to begin in Dec). It then dtermines the number on months needed to be dropped from the start of the model run to begin the time series at start_month
+    
+    Args:
+        files: directory path to the relevant netcdf data
+        model_size: time_length of the model
+        start_month (optional): the start month that each model needs to initialise its time series from (1=Jan, 12=Dec), default is January
+
+    Returns:
+        R: the remainder, the number of months needed to be dropped (necessarily 0<R<12)
+            example: if start_month = 1 and the model originally starts in December then R=1 ==> The first month (Dec) needs to be dropped to start at Jan.
+    """
+    time_vector, time_units, time_cal = extract_nc_time(files, model_size)
+    cdftime = utime(time_units,calendar=time_cal)
+    T0 = cdftime.num2date(time_vector[0])
+    R = mod_subtract(start_month,T0.month)
+    return R
+
+def reshape_data(output_array,plev_flag):
+    """Reshapes a data array of form [time, plev OR lat, model] into [months, year, plev OR lat, model] form
+    The function assumes the size of output array has been constructed to be divisible by 12 (this is done in round_time and empty_array_generator)
+
+    Args:
+        output_array: array to be reshaped
+        plev_flag: =1 if field is of form [time plev lat models]; =0 if [time lat models]
+
+    Returns:
+        output_array: the reshaped array with shape [months(=12), year, plev OR lat, model]
+    """
+#     if np.shape(output_array,0)%12 != 0 
+        # Write exception here, really should never happen but a useful check
+    if plev_flag:
+        output_array = np.reshape(output_array, (12,np.size(output_array,0)/12,np.size(output_array,1),np.size(output_array,2),np.size(output_array,3)),order='F')
+    else:
+        output_array = np.reshape(output_array, (12,-1,np.size(output_array,1),np.size(output_array,2)),order='F')
+    return output_array
