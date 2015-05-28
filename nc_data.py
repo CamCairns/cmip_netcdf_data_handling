@@ -71,7 +71,7 @@ def extract_nc_time(files, model_size):
         model_size_tkr = model_size_tkr + len(time)
     return time_vector, time_units, time_cal
 
-def empty_array_generator(files, time_length, model_dim=1):
+def empty_array_generator(files, time_length, model_dim=1,modulo=None):
     """Extracts coord data and preallocates a NaN array of appropriates size
 
     Given a list of file pathnames a time_length and (optinal) a 4th model dimension the function generates a NaN array of the right size [time_length, plev, lat, model_dim].
@@ -89,12 +89,17 @@ def empty_array_generator(files, time_length, model_dim=1):
         plev_flag: =1 if plev exists, =0 otherwise
     """
     # We assume here that the [lat plev] size of all models for a particular variable are equal/consistent!
+    if modulo:
+        pass
+    else:
+        modulo = time_length
+
     if files:
         lat, plev, plev_flag = load_coord_data(files)
         if plev_flag:
-            nan_array = np.squeeze(np.empty([time_length, np.size(plev), np.size(lat), model_dim])*np.nan)
+            nan_array = np.squeeze(np.empty([time_length+time_length%modulo, np.size(plev), np.size(lat), model_dim])*np.nan)
         else: 
-            nan_array = np.squeeze(np.empty([time_length, np.size(lat), model_dim])*np.nan)
+            nan_array = np.squeeze(np.empty([time_length+ time_length%modulo, np.size(lat), model_dim])*np.nan)
     else:
         nan_array = None
         print "No file found at that location"

@@ -28,7 +28,7 @@ def fetch_nc_data(time_length,category,experi, freq, realm, vari, model_list, en
         pass
 
     files = nc.get_filepath(category,experi, freq, realm, vari, model_list[0], ensemble=None, mount_dir=mount)
-    output_array, lat, plev, plev_flag = nc.empty_array_generator(files,time_length, model_dim=len(model_list))
+    output_array, lat, plev, plev_flag = nc.empty_array_generator(files,time_length, model_dim=len(model_list),modulo=12)
     mask_list = []
     for i1, model in enumerate(model_list):
 #        print "Loading %s/%s/%s/%s/%s/%s" % (category, experi, freq, realm, vari, model)
