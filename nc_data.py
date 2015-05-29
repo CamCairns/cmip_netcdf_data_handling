@@ -94,7 +94,7 @@ def empty_array_generator(files, time_length, model_dim=None,modulo=None):
     """
     # We assume here that the [lat plev] size of all models for a particular variable are equal/consistent!
     if modulo:
-        padding = (modulo - time_length%modulo)
+        padding = (modulo - time_length%modulo)%modulo
     else:
         padding = 0
 
@@ -113,7 +113,6 @@ def empty_array_generator(files, time_length, model_dim=None,modulo=None):
     else:
         nan_array = None
         print "No file found at that location"
-    print "EMPTY_array_size", np.shape(nan_array)
     return nan_array, lat, plev, plev_flag
 
 def extract_nc_data(files, nc_vari, tmp_array, error_limit=1.0e8,zonal_mean=True):
