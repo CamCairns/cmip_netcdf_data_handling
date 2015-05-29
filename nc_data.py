@@ -272,9 +272,11 @@ def write_nc(input_lat, input_latb, input_plev, plev_flag, input_array, time_vec
     else:
         pass
     tmp.units = units_dict[vari]
-    times.units = time_units
+    if 'since' in time_units:
+        times.units = time_units
+    else: # Throw error here
+        "ERROR"
     times.calendar = time_cal
-    
     # Write Data
     latitudes[:] = input_lat
     latitude_bnds[:] = input_latb
