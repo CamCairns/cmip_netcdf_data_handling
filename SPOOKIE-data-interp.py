@@ -7,7 +7,7 @@ experi_list = ['amip'] #['aqua4xCO2', 'aquaControl'] #['convoffaqua4K','convoffa
 realm_list = ['atmos']
 vari_list = ['ua','uas','va','vas','ta','tas','hur','hus']
 category = 'AMIP' # SPOOKIE
-mount = 'mountpoint3'
+mount = 'mountpoint4'
 
 for i1, experi in enumerate(experi_list):
     for i2, freq in enumerate(freq_list):

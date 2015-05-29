@@ -68,8 +68,8 @@ def extract_nc_time(files, model_size):
         time = np.squeeze(nc.variables['time'][:])
         time = time.copy() # make a copy because time is a read only version 
         nc.close
-        time_vector[model_size_tkr:model_size_tkr+len(time)] = time
-        model_size_tkr = model_size_tkr + len(time)
+        time_vector[model_size_tkr:model_size_tkr + np.size(time)] = time
+        model_size_tkr = model_size_tkr + np.size(time)
     return time_vector, time_units, time_cal
 
 def empty_array_generator(files, time_length, model_dim=None,modulo=None):
