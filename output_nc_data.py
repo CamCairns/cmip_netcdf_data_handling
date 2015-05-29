@@ -39,4 +39,5 @@ def fetch_nc_data(time_length,category,experi, freq, realm, vari, model_list, en
     keep_mask = set(range(len(model_list))) - set(mask_list)        
     output_array = output_array[...,list(keep_mask)]
     output_array = nc.reshape_data(output_array,plev_flag)
+    output_array = np.squeeze(output_array)
     return output_array
