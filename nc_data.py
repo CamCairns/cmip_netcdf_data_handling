@@ -301,8 +301,6 @@ def write_nc(input_lat, input_latb, input_plev, plev_flag, input_array, time_vec
     tmp.units = units_dict[vari]
     if 'since' in time_units:
         times.units = time_units
-    elif model=="MPI-ESM-LR":
-        times.units = "days since 1979-1-1 00:00:00"
     else: 
         print "We have an error in times.units" 
     times.calendar = time_cal
