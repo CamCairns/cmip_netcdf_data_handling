@@ -29,6 +29,7 @@ def fetch_nc_data(time_length, experi_list, freq_list, realm_list, vari_list, en
                                 model_size_list.append(nc.find_model_size(files,vari))
                             else:
                                 model_size_list.append(np.nan)
+#                             print 'Model {} time_length is {}'.format(model, nc.find_model_size(files,vari))
         if time_length=='max':
             time_length = max(model_size_list) 
         else:
@@ -40,7 +41,7 @@ def fetch_nc_data(time_length, experi_list, freq_list, realm_list, vari_list, en
         pass
     print "The time length of the output array is ", time_length
 
-    files = nc.get_filepath(experi, freq, realm, vari, shared_models[0], ensemble, mount_dir=mount_dir) # Just getting lat and plev dims (we are assuming all models have shared lat and plev coords
+    files = nc.get_filepath(experi_list[0], freq_list[0], realm_list[0], vari_list[0], shared_models[0], ensemble, mount_dir=mount_dir) # Just getting lat and plev dims (we are assuming all models have shared lat and plev coords
     output_array, lat, plev, plev_flag = nc.empty_array_generator(files,time_length, model_dim=len(shared_models), vari_dim=len(vari_list),modulo=12)
 
     for experi in experi_list:
