@@ -6,6 +6,57 @@ import os
 import errno
 from netcdftime import utime, datetime
 
+def generate_ensemble_list(experi_list, freq_list, realm_list, vari_list, mount_dir='mountpoint'):
+    """ Generates an ensemble list at the model directory level
+    
+    Args: 
+        experi: {AMIP, SPOOKIE}/{experiment}
+        freq: frequency (string)
+        realm: realm (string)
+        vari: variable (string)
+        mount: mountpoint directory name
+        
+    Returns:
+        A list of file pathnames
+    """
+    location = os.path.join('/Users/camcairns/', mount_dir)
+    ensemble_list = []
+    for experi in experi_list:
+        for freq in freq_list:
+            for realm in realm_list:
+                for vari in vari_list:
+                    ensemble_list.append(os.path.join(location, experi, freq, realm, vari))
+#                     print ensemble_list
+    return ensemble_list
+
+def get_filepath(experi,freq,realm,vari,model,ensemble='r1i1p1',mount_dir='mountpoint',verbose=False):
+    """Gets a list of the SPOOKIE filepaths from the directory structure I have created,
+    Directory structure has form SPOOKIE/experi/freq/realm/vari/model/. Operates using a directory mounted up using FUSE OSX
+    
+    Args:
+        experi: {AMIP, SPOOKIE}/{experiment}
+        freq: frequency (string)
+        realm: realm (string)
+        vari: variable (string)
+        model: model (string)
+        ensemble: ensemble number (string,optional)
+        mount: mountpoint directory name
+        
+    Returns:
+        A list of file pathnames
+    """
+    location = '/Users/camcairns/' + mount_dir + '/'
+    files = []
+    if ensemble:
+        if verbose:
+            print "Looking for netcdfs here : \n", os.path.join(location, experi, freq, realm, vari, model, ensemble, "*.nc")
+        files = glob.glob(os.path.join(location, experi, freq, realm, vari, model, ensemble, "*.nc"))
+    else:
+        if verbose:
+            print "Looking for netcdfs here: \n", os.path.join(location, experi, freq, realm, vari, model, "*.nc")
+        files = glob.glob(os.path.join(location, experi, freq, realm, vari, model, "*.nc"))
+    return files
+
 def load_coord_data(files):
     """Extracts coordinate data from a bunch of nc files
 
@@ -72,7 +123,7 @@ def extract_nc_time(files, model_size):
         model_size_tkr = model_size_tkr + np.size(time)
     return time_vector, time_units, time_cal
 
-def empty_array_generator(files, time_length, model_dim=None,modulo=None):
+def empty_array_generator(files, time_length, model_dim=None,vari_dim=None,modulo=None):
     """Extracts coord data and preallocates a NaN array of appropriates size
 
     Given a list of file pathnames a time_length and (optinal) a 4th model dimension the function generates a NaN array of the right size [time_length, plev, lat, model_dim].
@@ -102,12 +153,12 @@ def empty_array_generator(files, time_length, model_dim=None,modulo=None):
         lat, plev, plev_flag = load_coord_data(files)
         if plev_flag:
             if model_dim:
-                nan_array = np.empty([time_length + padding, np.size(plev), np.size(lat), model_dim])*np.nan
+                nan_array = np.empty([time_length + padding, np.size(plev), np.size(lat), model_dim, vari_dim])*np.nan
             else:
                 nan_array = np.empty([time_length + padding, np.size(plev), np.size(lat)])*np.nan
         else: 
             if model_dim:
-                nan_array = np.empty([time_length + padding, np.size(lat), model_dim])*np.nan
+                nan_array = np.empty([time_length + padding, np.size(lat), model_dim, vari_dim])*np.nan
             else:
                 nan_array = np.empty([time_length + padding, np.size(lat)])*np.nan
     else:
@@ -115,7 +166,7 @@ def empty_array_generator(files, time_length, model_dim=None,modulo=None):
         print "No file found at that location"
     return nan_array, lat, plev, plev_flag
 
-def extract_nc_data(files, nc_vari, tmp_array, error_limit=1.0e8,zonal_mean=True):
+def extract_nc_data(files, nc_vari, tmp_array, error_limit=1.0e8,zonal_mean=True, verbose=False):
     """Extracts data from a bunch of nc files
 
     Given a list of files pathname to a bunch of netcdf files, function, opens each files, places into a preallocated numpy array "tmp_array" into a larger array
@@ -126,12 +177,13 @@ def extract_nc_data(files, nc_vari, tmp_array, error_limit=1.0e8,zonal_mean=True
         vari: A IPCC CMIP variable shortname (ex. 'ua')
         tmp_array: An preallocated numpy array of appropriate size
         error_limit: floating point value, data entries greater then this size will be marked as NaNs
-
+        verbose: Verbosity flag, if true will print out some (hopefully!) helpful statements
     Returns:
         A numpy array of all the netcdf files concatenated together
     """
     model_size_tkr = 0
-    print 'The model consists of %d .nc file(s)' % np.size(files)
+    if verbose:
+        print 'The model consists of {} .nc file(s)'.format(np.size(files))
     for k in range(len(files)):
         nc = Dataset(files[k],'r')
         temp = np.squeeze(nc.variables[nc_vari][:])
@@ -160,38 +212,7 @@ def find_model_size(files,nc_variable_name):
         tmp = np.squeeze(nc.variables[nc_variable_name][:]) # loading dimensions backwards [time, pfull, lat, lon]
         model_size = model_size + np.size(tmp,0);
         nc.close
-
     return model_size
-    
-def get_filepath(category,experi,freq,realm,vari,model,ensemble='r1i1p1',mount_dir='mountpoint'):
-    """Gets a list of the SPOOKIE filepaths from the directory structure I have created,
-    
-    Directory structure has form SPOOKIE/experi/freq/realm/vari/model/. Operates using a directory mounted up using FUSE OSX
-    
-    Args:
-        category: AMIP, SPOOKIE
-        experi: experiment (string)
-        freq: frequency (string)
-        realm: realm (string)
-        vari: variable (string)
-        model: model (string)
-        ensemble: ensemble number (string,optional)
-        mount: mountpoint directory name
-        
-    Returns:
-        A list of file pathnames
-    """
-    location = '/Users/camcairns/' + mount_dir + '/' + category + '/'
-    files = []
-    if ensemble:
-#         print "Looking for netcdfs here: \n", location + str(experi) + '/' + str(freq) + '/' + str(realm) + '/' + str(vari) + '/' + str(model) + '/' + str(ensemble) + '/*.nc'
-        files = glob.glob(location + str(experi) + '/' + str(freq) + '/' + str(realm) + '/' + str(vari) + '/' + str(model) + '/' + str(ensemble) + '/*.nc')
-    else:
-#         print "Looking for netcdfs here: \n", location + str(experi) + '/' + str(freq) + '/' + str(realm) + '/' + str(vari) + '/' + str(model) + '/*.nc'
-        files = glob.glob(location + str(experi) + '/' + str(freq) + '/' + str(realm) + '/' + str(vari) + '/' + str(model) + '/*.nc')
-
-    
-    return files
 
 def interp_data(lat_old, plev_old, plev_flag, lat_new, plev_new, array):
 
@@ -280,8 +301,10 @@ def write_nc(input_lat, input_latb, input_plev, plev_flag, input_array, time_vec
     tmp.units = units_dict[vari]
     if 'since' in time_units:
         times.units = time_units
-    else: # Throw error here
-        "ERROR"
+    elif model=="MPI-ESM-LR":
+        times.units = "days since 1979-1-1 00:00:00"
+    else: 
+        print "We have an error in times.units" 
     times.calendar = time_cal
     # Write Data
     latitudes[:] = input_lat
