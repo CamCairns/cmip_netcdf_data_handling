@@ -215,7 +215,6 @@ def find_model_size(files,nc_variable_name):
     return model_size
 
 def interp_data(lat_old, plev_old, plev_flag, lat_new, plev_new, array):
-
     """interpolates data of the form [time, lat, plev] the function interpolates data array onto a new grid [time, lat_new, plev_new]
 
 The function uses the griddata function, this allows NaNs, (particularly boundary NaNs) to be avoided.
@@ -229,8 +228,6 @@ The function uses the griddata function, this allows NaNs, (particularly boundar
 
     Returns:
         A numpy array of interpolated data with dimensions
-
-    Raises:
     """
     if plev_flag:
         array_interp = np.empty([np.size(array,0), len(plev_new), len(lat_new)])
