@@ -91,7 +91,7 @@ def load_coord_data(files):
         plev= np.squeeze(nc.variables['pfull'][:])
         plev_flag = 1
     else:
-        print "No pressure coordinate vector found"
+#        print "No pressure coordinate vector found"
         plev = []
         plev_flag = 0
     nc.close
@@ -350,10 +350,8 @@ def reshape_data(output_array,plev_flag):
     Returns:
         output_array: the reshaped array with shape [months(=12), year, plev OR lat, model]
     """
-#     if np.shape(output_array,0)%12 != 0 
-        # Write exception here, really should never happen but a useful check
     if plev_flag:
-        output_array = np.reshape(output_array, (12,np.size(output_array,0)/12,np.size(output_array,1),np.size(output_array,2),np.size(output_array,3),np.size(output_array,4)),order='F')
+        output_array = np.reshape(output_array, (12,np.size(output_array,0)/12,np.size(output_array,1),np.size(output_array,2),np.size(output_array,3),np.size(output_array,4),np.size(output_array,5)),order='F')
     else:
-        output_array = np.reshape(output_array, (12,np.size(output_array,0)/12,np.size(output_array,1),np.size(output_array,2),np.size(output_array,3)),order='F')
+        output_array = np.reshape(output_array, (12,np.size(output_array,0)/12,np.size(output_array,1),np.size(output_array,2),np.size(output_array,3),np.size(output_array,4)),order='F')
     return output_array
