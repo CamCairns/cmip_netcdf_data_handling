@@ -368,5 +368,5 @@ def reshape_data(output_array,plev_flag):
     if plev_flag:
         output_array = np.reshape(output_array, (12,np.size(output_array,0)/12,np.size(output_array,1),np.size(output_array,2),np.size(output_array,3),np.size(output_array,4)),order='F')
     else:
-        output_array = np.reshape(output_array, (12,-1,np.size(output_array,1),np.size(output_array,2)),np.size(output_array,3),order='F')
+        output_array = np.reshape(output_array, (12,np.size(output_array,0)/12,np.size(output_array,1),np.size(output_array,2),np.size(output_array,3)),order='F')
     return output_array

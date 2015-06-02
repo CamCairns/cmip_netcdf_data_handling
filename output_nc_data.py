@@ -92,7 +92,6 @@ would find the 4 combinationsL
             for realm in realm_list:
                 for i2, vari in enumerate(vari_list):
                     for i1, model in enumerate(shared_models):
-                        print experi, vari, model
                         files = nc.get_filepath(experi, freq, realm, vari, model, ensemble=None,mount_dir=mount_dir)
                         if files:
                             model_size = nc.find_model_size(files,vari)
@@ -104,8 +103,6 @@ would find the 4 combinationsL
                         else:
                             print "The model %s doesn't exist. THAT IS A PROBLEM" % model
 
-#     keep_mask = set(range(len(shared_models))) - set(mask_list)        
-#     output_array = output_array[...,list(keep_mask)]
     output_array = nc.reshape_data(output_array,plev_flag)
     output_array = np.squeeze(output_array)
     return output_array, lat, plev, shared_models
