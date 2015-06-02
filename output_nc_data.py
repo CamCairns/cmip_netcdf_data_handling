@@ -108,4 +108,4 @@ would find the 4 combinationsL
 #     output_array = output_array[...,list(keep_mask)]
     output_array = nc.reshape_data(output_array,plev_flag)
     output_array = np.squeeze(output_array)
-    return output_array, shared_models
+    return output_array, lat, plev, shared_models
