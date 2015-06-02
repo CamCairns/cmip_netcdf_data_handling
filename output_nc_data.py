@@ -51,7 +51,8 @@ would find the 4 combinationsL
         verbose (optional): if True, ouputs some helpful print statements
 
     Returns:
-        A numpy array with dimensions [month, year, plev, lat, common_models, vari]
+        output_array: A numpy array with dimensions [month, year, plev, lat, common_models, vari]
+        shared_models: A list of the shared models comprising output_array. The list is in the order they appear in the model dimension of output_array
     """
     ensemble_list = nc.generate_ensemble_list(experi_list, freq_list, realm_list, vari_list, mount_dir)
     shared_models = model_intersection(ensemble_list)
@@ -108,4 +109,4 @@ would find the 4 combinationsL
 #     output_array = output_array[...,list(keep_mask)]
     output_array = nc.reshape_data(output_array,plev_flag)
     output_array = np.squeeze(output_array)
-    return output_array
+    return output_array, shared_models
