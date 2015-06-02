@@ -85,9 +85,10 @@ would find the 4 combinationsL
     print "The time length of the output array is ", time_length
 
     files = nc.get_filepath(experi_list[0], freq_list[0], realm_list[0], vari_list[0], shared_models[0], ensemble=None, mount_dir=mount_dir) # Just getting lat and plev dims (we are assuming all models have shared lat and plev coords
-    output_array, lat, plev, plev_flag = nc.empty_array_generator(files,time_length, model_dim=len(shared_models), vari_dim=len(vari_list),modulo=12)
-
     for experi in experi_list:
+    lat, plev, plev_flag = nc.load_coord_data(files)
+    time_length = nc.modulo_padding(time_length,12)
+    output_array = nc.empty_array_generator([time_length, len(plev), len(lat), len(shared_models), len(experi_list), len(vari_list)])
         for freq in freq_list:
             for realm in realm_list:
                 for i2, vari in enumerate(vari_list):
@@ -95,7 +96,8 @@ would find the 4 combinationsL
                         files = nc.get_filepath(experi, freq, realm, vari, model, ensemble=None,mount_dir=mount_dir)
                         if files:
                             model_size = nc.find_model_size(files,vari)
-                            tmp_array, lat, plev, plev_flag = nc.empty_array_generator(files, model_size)
+                            lat, plev, plev_flag = nc.load_coord_data(files)
+                            tmp_array = nc.empty_array_generator([model_size, len(plev), len(lat)])
                             tmp_array = nc.extract_nc_data(files, vari, tmp_array, zonal_mean=False)
                             time_arg = min(np.size(tmp_array,0),time_length)
                             R = nc.round_time(files, model_size,start_month=start_month)

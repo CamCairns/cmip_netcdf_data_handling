@@ -92,7 +92,7 @@ def load_coord_data(files):
         plev_flag = 1
     else:
         print "No pressure coordinate vector found"
-        plev = None
+        plev = []
         plev_flag = 0
     nc.close
 #     time= np.squeeze(nc.variables['time'][:])
@@ -123,7 +123,12 @@ def extract_nc_time(files, model_size):
         model_size_tkr = model_size_tkr + np.size(time)
     return time_vector, time_units, time_cal
 
-def empty_array_generator(files, time_length, model_dim=None,vari_dim=None,modulo=None):
+def modulo_padding(time_length, modulo):
+    padding = (modulo - time_length%modulo)%modulo
+    time_length = time_length + padding
+    return time_length
+
+def empty_array_generator(dimension_list):
     """Extracts coord data and preallocates a NaN array of appropriates size
 
     Given a list of file pathnames a time_length and (optinal) a 4th model dimension the function generates a NaN array of the right size [time_length, plev, lat, model_dim].
@@ -144,27 +149,9 @@ def empty_array_generator(files, time_length, model_dim=None,vari_dim=None,modul
         plev_flag: =1 if plev exists, =0 otherwise
     """
     # We assume here that the [lat plev] size of all models for a particular variable are equal/consistent!
-    if modulo:
-        padding = (modulo - time_length%modulo)%modulo
-    else:
-        padding = 0
-
-    if files:
-        lat, plev, plev_flag = load_coord_data(files)
-        if plev_flag:
-            if model_dim:
-                nan_array = np.empty([time_length + padding, np.size(plev), np.size(lat), model_dim, vari_dim])*np.nan
-            else:
-                nan_array = np.empty([time_length + padding, np.size(plev), np.size(lat)])*np.nan
-        else: 
-            if model_dim:
-                nan_array = np.empty([time_length + padding, np.size(lat), model_dim, vari_dim])*np.nan
-            else:
-                nan_array = np.empty([time_length + padding, np.size(lat)])*np.nan
-    else:
-        nan_array = None
-        print "No file found at that location"
-    return nan_array, lat, plev, plev_flag
+    dimension_list = filter(None,dimension_list)
+    nan_array = np.empty(dimension_list)*np.nan
+    return nan_array
 
 def extract_nc_data(files, nc_vari, tmp_array, error_limit=1.0e8,zonal_mean=True, verbose=False):
     """Extracts data from a bunch of nc files

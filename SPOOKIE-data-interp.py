@@ -30,7 +30,8 @@ for i1, experi in enumerate(experi_list):
                         model_size = find_model_size(files, vari) # find the total time length of the model, use to preallocate a numpy array
                         
                         # PREALLOCATE EMPTY ARRAY
-                        tmp_array, lat, plev, plev_flag = empty_array_generator(files, model_size)
+                        lat, plev, plev_flag = load_coord_data(files)
+                        tmp_array = empty_array_generator([model_size, len(plev), len(lat)])
 
                         #FIELD DATA EXTRACTION AND CONCATENATION    
                         tmp_array = extract_nc_data(files, vari, tmp_array);
