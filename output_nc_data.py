@@ -56,7 +56,6 @@ would find the 4 combinationsL
     """
     ensemble_list = nc.generate_ensemble_list(experi_list, freq_list, realm_list, vari_list, mount_dir)
     shared_models = model_intersection(ensemble_list)
-    print root_list
     if root_list:
         shared_models = list(set(shared_models).intersection(set(root_list)))
     print "Shared model list", shared_models
