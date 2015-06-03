@@ -97,7 +97,12 @@ def load_coord_data(files):
     nc.close
 #     time= np.squeeze(nc.variables['time'][:])
 
-    return lat, plev, plev_flag
+    if nc.variables.has_key('lon'):
+        lon= np.squeeze(nc.variables['lon'][:])
+    else:
+        lon = []
+
+    return plev, lat, lon, plev_flag
 
 def extract_nc_time(files, model_size):
     """  Gets time, time from a bunch of netcdf files and concatenates them together
