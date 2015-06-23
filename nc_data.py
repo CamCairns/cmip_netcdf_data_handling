@@ -186,10 +186,10 @@ def extract_nc_data(files, nc_vari, tmp_array, error_limit=1.0e8,zonal_mean=True
         temp = temp.copy() # make a copy because temp is a read only version 
         nc.close
         if zonal_mean:
-            temp[temp>error_limit]= np.nan; # I'd like to make this code genreal for any variable, use dictionary here to assign different tolerances, maybe extract it from the netcdf file?
-            temp = np.squeeze(np.nanmean(temp,len(np.shape(temp))-1)); # Take a zonal mean, id like to make this more general as well, automatically pick out the lon dimension?
-        tmp_array[model_size_tkr:model_size_tkr+np.size(temp,0),...] = temp
-        model_size_tkr = model_size_tkr + np.size(temp,0)
+            tmp[tmp>error_limit]= np.nan; # I'd like to make this code genreal for any variable, use dictionary here to assign different tolerances, maybe extract it from the netcdf file?
+            tmp = np.squeeze(np.nanmean(tmp,-1)); # Take a zonal mean, id like to make this more general as well, automatically pick out the lon dimension?
+        tmp_array[model_size_tkr:model_size_tkr+np.size(tmp,0),...] = tmp
+        model_size_tkr = model_size_tkr + np.size(tmp,0)
     return tmp_array
 
 def find_model_size(files,nc_variable_name):
@@ -210,7 +210,7 @@ def find_model_size(files,nc_variable_name):
         nc.close
     return model_size
 
-def interp_data(lat_old, plev_old, plev_flag, lat_new, plev_new, array):
+def interp_data(plev_old, plev_flag, lat_old, plev_new, lat_new, array):
     """interpolates data of the form [time, lat, plev] the function interpolates data array onto a new grid [time, lat_new, plev_new]
 
 The function uses the griddata function, this allows NaNs, (particularly boundary NaNs) to be avoided.
@@ -247,7 +247,36 @@ The function uses the griddata function, this allows NaNs, (particularly boundar
                 array_interp[m,:] = griddata(points, temp[mask],lat_new,method='cubic')
 
     return array_interp
-        
+
+def interp_data_lonlat(lat_old, lon_old, lat_new, lon_new, array):
+    """interpolates data of the form [time, lat, plev] the function interpolates data array onto a new grid [time, lat_new, plev_new]
+
+The function uses the griddata function, this allows NaNs, (particularly boundary NaNs) to be avoided.
+
+    Args:
+        lat_old: vector of the latitude values for the orginal data array
+        plev_old: vector of the pressure values for the orginal data array
+        lat_new: vector of the latitude values for the new data array
+        plev_new: vector of the pressure values for the new data array
+        array: original data_array with dimensions [time, lat_old, plev,old]
+
+    Returns:
+        A numpy array of interpolated data with dimensions
+    """
+    array_interp = np.empty([np.size(array,0), len(lat_new), len(lon_new)])
+    xold, yold = np.meshgrid(lon_old, lat_old)
+    xnew, ynew = np.meshgrid(lon_new, lat_new)
+
+    for m in xrange(np.size(array,0)):
+        if np.sum(~np.isnan(array[m,...]))==0:  # Some data in the cmip archive is a month of all NaNs, here we set the output as all NaN for that month
+            array_interp[m,...] = np.nan
+        else:
+            mask = ~np.isnan(array[m,...])
+            points =  zip(xold[mask], yold[mask])
+            temp = array[m,:,:]
+            array_interp[m,:,:] = griddata(points, temp[mask],(xnew,ynew),method='cubic')
+    return array_interp
+
 def write_nc(input_lat, input_latb, input_plev, plev_flag, input_array, time_vector, time_units, time_cal, save_path, model_size, experi, freq, realm, vari, model):
     """ Writes the zonal mean data that has been extracted out as a netcdf file, saves in a new directory structure
 
@@ -306,6 +335,73 @@ def write_nc(input_lat, input_latb, input_plev, plev_flag, input_array, time_vec
         tmp[0:model_size,0:len(input_plev),0:len(input_lat)] = input_array
     else: 
         tmp[0:model_size,0:len(input_lat)] = input_array
+    rootgrp.close()
+
+def write_nc3D(input_lat, input_latb, input_plev, plev_flag, input_lon, input_lonb, input_array, time_vector, time_units, time_cal, save_path, model_size, experi, freq, realm, vari, model):
+    """ Writes the zonal mean data that has been extracted out as a netcdf file, saves in a new directory structure
+
+        files: list of pathways to netcdf variables
+        tmp_array: An preallocated numpy vector of appropriate length
+
+    Returns:
+        Nothing, a netcdf file is written at the path specified at save_path
+    """
+    units_dict = {'ua': 'm/s', 'va': 'm/s', 'uas': 'm/s', 'vas': 'm/s', 'ta': 'K', 'tas': 'K', 'hur': '%', 'hus': '1'}
+    # Initiate NETCDF4
+    rootgrp = Dataset(save_path, 'w', format='NETCDF4')
+
+    # Set Dimensions
+    if plev_flag:
+        plev = rootgrp.createDimension('plev', len(input_plev))
+    else:
+        pass
+    lat = rootgrp.createDimension('lat', len(input_lat))
+    latb = rootgrp.createDimension('latb', len(input_latb))
+    lon = rootgrp.createDimension('lon', len(input_lon))
+    lonb = rootgrp.createDimension('lonb', len(input_lonb))
+    time = rootgrp.createDimension('time', None)
+
+    # Set Variables
+    times = rootgrp.createVariable('time','f8',('time',))
+    if plev_flag:
+        plev = rootgrp.createVariable('plev','f8',('plev',))
+        tmp = rootgrp.createVariable(vari,'f8',('time','plev','lat'))
+    else:
+        tmp = rootgrp.createVariable(vari,'f8',('time','lat'))
+    latitudes = rootgrp.createVariable('lat','f8',('lat',))
+    latitude_bnds = rootgrp.createVariable('lat_bnds','f8',('latb',))
+    longitudes = rootgrp.createVariable('lon','f8',('lon',))
+    longitudes_bnds = rootgrp.createVariable('lon_bnds','f8',('lonb',))
+    # two dimensions unlimited.
+
+    # Attributes for nc file
+    import time
+    rootgrp.description = 'SPOOKIE data interpolated on to a uniform [lev lat lon] grid. This nc_files is for MODEL: ' + model + '  FREQ: ' + freq + '  EXPERIMENT: ' + experi + '  REALM: ' + realm + '  VARI: ' + vari
+    rootgrp.history = 'Created ' + time.ctime(time.time()) + '. Original data sourced from DKRZ EUCLIPSE sever.'
+    rootgrp.source = 'Cameron Cairns; email: cam.cairns1@gmail.com'
+    latitudes.units = 'degrees north'
+    longitudes.units = 'degrees east'
+    if plev_flag:
+        plev.units = 'hPa'
+    else:
+        pass
+    tmp.units = units_dict[vari]
+    if 'since' in time_units:
+        times.units = time_units
+    else: 
+        print "We have an error in times.units" 
+    times.calendar = time_cal
+    # Write Data
+    latitudes[:] = input_lat
+    latitude_bnds[:] = input_latb
+    longitudes[:] = input_lon
+    longitudes_bnds[:] = input_lonb
+    times[:] = time_vector
+    if plev_flag:
+        plev[:] = input_plev
+        tmp[0:model_size,0:len(input_plev),0:len(input_lat),0:len(input_lon)] = input_array
+    else: 
+        tmp[0:model_size,0:len(input_lat),0:len(input_lon)] = input_array
     rootgrp.close()
 
 def mkdir_p(path):
