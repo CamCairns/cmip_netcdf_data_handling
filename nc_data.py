@@ -45,7 +45,8 @@ def get_filepath(experi,freq,realm,vari,model,ensemble='r1i1p1',mount_dir='mount
     Returns:
         A list of file pathnames
     """
-    location = '/Users/camcairns/' + mount_dir + '/'
+#     location = '/Users/camcairns/' + mount_dir + '/'
+    location = '/Volumes/MyBook/'
     files = []
     if ensemble:
         if verbose:
