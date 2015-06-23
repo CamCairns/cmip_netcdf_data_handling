@@ -12,7 +12,7 @@ def model_intersection(ensemble_list):
     shared_models = list(ensemble_models[0])
     return shared_models
     
-def fetch_nc_data(time_length, experi_list, freq_list, realm_list, vari_list, mount_dir='mountpoint', root_list = None, start_month=1, verbose=False):
+def fetch_nc_data(time_length, experi_list, freq_list, realm_list, vari_list, mount_dir='mountpoint', root_list = None, start_month=1, verbose=False, load_bnds=False):
     """Fetches netcdf data from SPOOKIE/AMIP interpolated directory structure.
 
  Outputs this data as a numpy array with form [month year plev lat model variable]. 
@@ -85,9 +85,10 @@ would find the 4 combinationsL
     print "The time length of the output array is ", time_length
 
     files = nc.get_filepath(experi_list[0], freq_list[0], realm_list[0], vari_list[0], shared_models[0], mount_dir=mount_dir) # Just getting lat and plev dims (we are assuming all models have shared lat and plev coords
-    plev, lat, lon, plev_flag = nc.load_coord_data(files)
+    plev, lat, lon, plev_flag, latb, lonb = nc.load_coord_data(files,load_bnds=load_bnds)
     time_length = nc.modulo_padding(time_length,12)
     output_array = nc.empty_array_generator([time_length, len(plev), len(lat), len(lon), len(shared_models), len(experi_list), len(vari_list)])
+    print 'output array shape', np.shape(output_array)
     for i5, experi in enumerate(experi_list):
         for freq in freq_list:
             for realm in realm_list:
@@ -95,12 +96,12 @@ would find the 4 combinationsL
                     for i1, model in enumerate(shared_models):
                         files = nc.get_filepath(experi, freq, realm, vari, model, mount_dir=mount_dir)
                         if files:
+                            print files
                             model_size = nc.find_model_size(files,vari)
                             plev, lat, lon, plev_flag = nc.load_coord_data(files)
+                            print 'lon', lon
                             tmp_array = nc.empty_array_generator([model_size, len(plev), len(lat), len(lon)])
-                            print 'Array Shape', tmp_array.shape
                             tmp_array = nc.extract_nc_data(files, vari, tmp_array, zonal_mean=False)
-                            print 'Array Shape 2', tmp_array.shape
                             time_arg = min(np.size(tmp_array,0),time_length)
                             R = nc.round_time(files, model_size,start_month=start_month)
                             output_array[:time_arg-R,...,i1,i5,i2] = tmp_array[R:time_arg,...]
@@ -108,4 +109,4 @@ would find the 4 combinationsL
                             print "The model %s doesn't exist. THAT IS A PROBLEM" % model
     output_array = nc.reshape_data(output_array,plev_flag)
     output_array = np.squeeze(output_array)
-    return output_array, lat, plev, shared_models
+    return output_array, lat, plev, latb, lonb, shared_models
