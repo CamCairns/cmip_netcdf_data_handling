@@ -182,8 +182,8 @@ def extract_nc_data(files, nc_vari, tmp_array, error_limit=1.0e8,zonal_mean=True
         print 'The model consists of {} .nc file(s)'.format(np.size(files))
     for k in range(len(files)):
         nc = Dataset(files[k],'r')
-        temp = np.squeeze(nc.variables[nc_vari][:])
-        temp = temp.copy() # make a copy because temp is a read only version 
+        tmp = np.squeeze(nc.variables[nc_vari][:])
+        tmp = tmp.copy() # make a copy because tmp is a read only version 
         nc.close
         if zonal_mean:
             tmp[tmp>error_limit]= np.nan; # I'd like to make this code genreal for any variable, use dictionary here to assign different tolerances, maybe extract it from the netcdf file?
