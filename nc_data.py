@@ -6,6 +6,11 @@ import os
 import errno
 from netcdftime import utime, datetime
 
+# ~~~~~~~~~~~~~ Global path to data archive ~~~~~~~~~~~~~~~~~~~~~~~
+# location = '/Users/camcairns/' + mount_dir + '/'
+location = '/Volumes/MyBook/'
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 def generate_ensemble_list(experi_list, freq_list, realm_list, vari_list, mount_dir='mountpoint'):
     """ Generates an ensemble list at the model directory level
     
@@ -19,7 +24,6 @@ def generate_ensemble_list(experi_list, freq_list, realm_list, vari_list, mount_
     Returns:
         A list of file pathnames
     """
-    location = os.path.join('/Users/camcairns/', mount_dir)
     ensemble_list = []
     for experi in experi_list:
         for freq in freq_list:
@@ -45,8 +49,7 @@ def get_filepath(experi,freq,realm,vari,model,ensemble='r1i1p1',mount_dir='mount
     Returns:
         A list of file pathnames
     """
-#     location = '/Users/camcairns/' + mount_dir + '/'
-    location = '/Volumes/MyBook/'
+
     files = []
     if ensemble:
         if verbose:
