@@ -12,7 +12,7 @@ def model_intersection(ensemble_list):
     shared_models = list(ensemble_models[0])
     return shared_models
     
-def fetch_nc_data(time_length, experi_list, freq_list, realm_list, vari_list, mount_dir='mountpoint', root_list = None, start_month=1, verbose=False, load_bnds=False):
+def fetch_nc_data(time_length, experi_list, freq_list, realm_list, vari_list, mount_dir='mountpoint', root_list = None, start_month=1, verbose=False):
     """Fetches netcdf data from SPOOKIE/AMIP interpolated directory structure.
 
  Outputs this data as a numpy array with form [month year plev lat model variable]. 
@@ -60,9 +60,9 @@ would find the 4 combinationsL
         shared_models = list(set(shared_models).intersection(set(root_list)))
     print "Shared model list", shared_models
 
-    time_length = ncd.get_time_dim(experi_list, freq_list, realm_list, vari_list, shared_models, time_length='max')
+    time_length = ncd.get_time_dim(experi_list, freq_list, realm_list, vari_list, shared_models, time_length=time_length)
     files = ncd.get_filepath(experi_list[0], freq_list[0], realm_list[0], vari_list[0], shared_models[0], mount_dir=mount_dir) # Just getting lat and plev dims (we are assuming all models have shared lat and plev coords
-    plev, lat, lon, plev_flag, latb, lonb = ncd.load_coord_data(files,load_bnds=load_bnds)
+    plev, lat, lon, plev_flag, latb, lonb = ncd.load_coord_data(files)
     time_length = ncd.modulo_padding(time_length,12)
     output_array = ncd.empty_array_generator([time_length, len(plev), len(lat), len(lon), len(shared_models), len(experi_list), len(vari_list)])
     print 'output array shape', np.shape(output_array)
@@ -74,7 +74,7 @@ would find the 4 combinationsL
                         files = ncd.get_filepath(experi, freq, realm, vari, model, mount_dir=mount_dir)
                         if files:
                             model_size = ncd.find_model_size(files,vari)
-                            plev, lat, lon, plev_flag = ncd.load_coord_data(files)
+                            plev, lat, lon, plev_flag, latb, lonb = ncd.load_coord_data(files)
                             tmp_array = ncd.empty_array_generator([model_size, len(plev), len(lat), len(lon)])
                             tmp_array = ncd.extract_nc_data(files, vari, tmp_array, zonal_mean=False)
                             time_arg = min(np.size(tmp_array,0),time_length)

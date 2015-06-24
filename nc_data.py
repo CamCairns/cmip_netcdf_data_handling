@@ -31,7 +31,6 @@ def generate_ensemble_list(experi_list, freq_list, realm_list, vari_list, mount_
             for realm in realm_list:
                 for vari in vari_list:
                     ensemble_list.append(os.path.join(location, experi, freq, realm, vari))
-#                     print ensemble_list
     return ensemble_list
 
 def get_filepath(experi,freq,realm,vari,model,ensemble='r1i1p1',mount_dir='mountpoint',verbose=False):
@@ -62,7 +61,7 @@ def get_filepath(experi,freq,realm,vari,model,ensemble='r1i1p1',mount_dir='mount
         files = glob.glob(os.path.join(location, experi, freq, realm, vari, model, "*.nc"))
     return files
 
-def load_coord_data(files, load_bnds=False):
+def load_coord_data(files):
     """Extracts coordinate data from a bunch of nc files
 
     Given a list of file pathnames the function takes the first filename and extracts lat and pressure (if it exists). 
@@ -107,25 +106,21 @@ def load_coord_data(files, load_bnds=False):
     else:
         lon = []
         
-    if load_bnds:
-        if nc.variables.has_key('latb'):
-            latb= np.squeeze(nc.variables['latb'][:])
-        elif nc.variables.has_key('lat_bnds'):
-            latb= np.squeeze(nc.variables['lat_bnds'][:])
-        else:
-            latb = []
-            
-        if nc.variables.has_key('lonb'):
-            lonb= np.squeeze(nc.variables['lonb'][:])
-        elif nc.variables.has_key('lon_bnds'):
-            lonb= np.squeeze(nc.variables['lon_bnds'][:])
-        else:
-            lonb = []
-
-    if load_bnds:
-        return plev, lat, lon, plev_flag, latb, lonb
+    if nc.variables.has_key('latb'):
+        latb= np.squeeze(nc.variables['latb'][:])
+    elif nc.variables.has_key('lat_bnds'):
+        latb= np.squeeze(nc.variables['lat_bnds'][:])
     else:
-        return plev, lat, lon, plev_flag
+        latb = []
+        
+    if nc.variables.has_key('lonb'):
+        lonb= np.squeeze(nc.variables['lonb'][:])
+    elif nc.variables.has_key('lon_bnds'):
+        lonb= np.squeeze(nc.variables['lon_bnds'][:])
+    else:
+        lonb = []
+        
+    return plev, lat, lon, plev_flag, latb, lonb
 
 def extract_nc_time(files, model_size):
     """  Gets time, time from a bunch of netcdf files and concatenates them together
