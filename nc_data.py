@@ -8,7 +8,8 @@ from netcdftime import utime, datetime
 
 # ~~~~~~~~~~~~~ Global path to data archive ~~~~~~~~~~~~~~~~~~~~~~~
 # location = '/Users/camcairns/' + mount_dir + '/'
-location = '/Volumes/MyBook/'
+# location = '/Volumes/MyBook/'
+location = '/Volumes/SAMSUNG/'
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 def generate_ensemble_list(experi_list, freq_list, realm_list, vari_list, mount_dir='mountpoint'):
