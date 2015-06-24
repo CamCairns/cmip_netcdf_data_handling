@@ -99,7 +99,6 @@ would find the 4 combinationsL
                             print files
                             model_size = nc.find_model_size(files,vari)
                             plev, lat, lon, plev_flag = nc.load_coord_data(files)
-                            print 'lon', lon
                             tmp_array = nc.empty_array_generator([model_size, len(plev), len(lat), len(lon)])
                             tmp_array = nc.extract_nc_data(files, vari, tmp_array, zonal_mean=False)
                             time_arg = min(np.size(tmp_array,0),time_length)
