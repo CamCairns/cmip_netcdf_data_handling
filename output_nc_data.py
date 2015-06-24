@@ -1,5 +1,5 @@
 import numpy as np
-import nc_data as nc
+import nc_data as ncd
 import os
 import glob
 
@@ -54,7 +54,7 @@ would find the 4 combinationsL
         output_array: A numpy array with dimensions [month, year, plev, lat, common_models, vari]
         shared_models: A list of the shared models comprising output_array. The list is in the order they appear in the model dimension of output_array
     """
-    ensemble_list = nc.generate_ensemble_list(experi_list, freq_list, realm_list, vari_list, mount_dir)
+    ensemble_list = ncd.generate_ensemble_list(experi_list, freq_list, realm_list, vari_list, mount_dir)
     shared_models = model_intersection(ensemble_list)
     if root_list:
         shared_models = list(set(shared_models).intersection(set(root_list)))
@@ -67,12 +67,12 @@ would find the 4 combinationsL
                 for realm in realm_list:
                     for vari in vari_list:
                         for k, model in enumerate(shared_models):
-                            files = nc.get_filepath(experi, freq, realm, vari, model, mount_dir=mount_dir)
+                            files = ncd.get_filepath(experi, freq, realm, vari, model, mount_dir=mount_dir)
                             if files:
-                                model_size_list.append(nc.find_model_size(files,vari))
+                                model_size_list.append(ncd.find_model_size(files,vari))
                             else:
                                 model_size_list.append(np.nan)
-#                             print 'Model {} time_length is {}'.format(model, nc.find_model_size(files,vari))
+#                             print 'Model {} time_length is {}'.format(model, ncd.find_model_size(files,vari))
         if time_length=='max':
             time_length = max(model_size_list) 
         else:
@@ -84,28 +84,27 @@ would find the 4 combinationsL
         pass
     print "The time length of the output array is ", time_length
 
-    files = nc.get_filepath(experi_list[0], freq_list[0], realm_list[0], vari_list[0], shared_models[0], mount_dir=mount_dir) # Just getting lat and plev dims (we are assuming all models have shared lat and plev coords
-    plev, lat, lon, plev_flag, latb, lonb = nc.load_coord_data(files,load_bnds=load_bnds)
-    time_length = nc.modulo_padding(time_length,12)
-    output_array = nc.empty_array_generator([time_length, len(plev), len(lat), len(lon), len(shared_models), len(experi_list), len(vari_list)])
+    files = ncd.get_filepath(experi_list[0], freq_list[0], realm_list[0], vari_list[0], shared_models[0], mount_dir=mount_dir) # Just getting lat and plev dims (we are assuming all models have shared lat and plev coords
+    plev, lat, lon, plev_flag, latb, lonb = ncd.load_coord_data(files,load_bnds=load_bnds)
+    time_length = ncd.modulo_padding(time_length,12)
+    output_array = ncd.empty_array_generator([time_length, len(plev), len(lat), len(lon), len(shared_models), len(experi_list), len(vari_list)])
     print 'output array shape', np.shape(output_array)
     for i5, experi in enumerate(experi_list):
         for freq in freq_list:
             for realm in realm_list:
                 for i2, vari in enumerate(vari_list):
                     for i1, model in enumerate(shared_models):
-                        files = nc.get_filepath(experi, freq, realm, vari, model, mount_dir=mount_dir)
+                        files = ncd.get_filepath(experi, freq, realm, vari, model, mount_dir=mount_dir)
                         if files:
-                            print files
-                            model_size = nc.find_model_size(files,vari)
-                            plev, lat, lon, plev_flag = nc.load_coord_data(files)
-                            tmp_array = nc.empty_array_generator([model_size, len(plev), len(lat), len(lon)])
-                            tmp_array = nc.extract_nc_data(files, vari, tmp_array, zonal_mean=False)
+                            model_size = ncd.find_model_size(files,vari)
+                            plev, lat, lon, plev_flag = ncd.load_coord_data(files)
+                            tmp_array = ncd.empty_array_generator([model_size, len(plev), len(lat), len(lon)])
+                            tmp_array = ncd.extract_nc_data(files, vari, tmp_array, zonal_mean=False)
                             time_arg = min(np.size(tmp_array,0),time_length)
-                            R = nc.round_time(files, model_size,start_month=start_month)
+                            R = ncd.round_time(files, model_size,start_month=start_month)
                             output_array[:time_arg-R,...,i1,i5,i2] = tmp_array[R:time_arg,...]
                         else:
                             print "The model %s doesn't exist. THAT IS A PROBLEM" % model
-    output_array = nc.reshape_data(output_array,plev_flag)
+    output_array = ncd.reshape_data(output_array,plev_flag)
     output_array = np.squeeze(output_array)
     return output_array, lat, plev, latb, lonb, shared_models
