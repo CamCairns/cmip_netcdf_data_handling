@@ -479,3 +479,50 @@ def reshape_data(output_array,plev_flag):
     else:
         output_array = np.reshape(output_array, (12,np.size(output_array,0)/12,np.size(output_array,1),np.size(output_array,2),np.size(output_array,3),np.size(output_array,4)),order='F')
     return output_array
+
+def get_time_dim(experi_list, freq_list, realm_list, vari_list, model_list, time_length='max', verbose=False):
+    """Returns an appropriate time_length to use in the preallocation of a numpy array
+    
+    The function sweeps through the list of models contained in the filepaths and returns a time_length (dependent on the time_length input option. For further info see args)
+
+    Args:
+        experi_list: list of experiments for example ['SPOOKIE/convoffamip']
+        freq_list: list of freq terms
+        realm_list: list of realm terms
+        vari_list: list of vari terms
+        model_list: list of model names
+        time_length (optional): integer, 'max' or 'min'. Sets the time_length of the eventual output_array
+                 'max' ==> an array size determined by the maximum time length of shared models in the available ensemble (padded up to the next multiple of 12)
+                 'min' ==> an array size determined by the minimum time length of shared models in the available ensemble (padded up to the next multiple of 12)
+                 <integer> ==> an array size with time_length <integer> (padded up to the next multiple of 12)
+        verbose (optinal): If true, prints extra useful information for debugging
+    Returns:
+        output_array: the reshaped array with shape [months(=12), year, plev OR lat, model]
+    """
+    if time_length in ('max','min'):
+        model_size_list = []
+        for experi in experi_list:
+            for freq in freq_list:
+                for realm in realm_list:
+                    for vari in vari_list:
+                        for k, model in enumerate(model_list):
+#                         TODO: Add a R-modulo blah blah here. Technically a model could be larger if it started at a different month 
+#                         then all the others BUT, when correctly shortened became smaller. This is a pretty niche case but does constitue a bug 
+#                         in this program. We want to compare corrected model lengths
+                            files = get_filepath(experi, freq, realm, vari, model)
+                            if files:
+                                model_size_list.append(find_model_size(files,vari))
+                            else:
+                                model_size_list.append(np.nan)
+        if time_length=='max':
+            time_length = max(model_size_list) 
+        else:
+            time_length = min(model_size_list)
+        if verbose:
+            print 'Maximum model time_length is {}'.format(max(model_size_list))
+            print 'Minimum model time_length is {}'.format(min(model_size_list))
+    else:
+        pass
+    print "The time length of the output array is ", time_length
+    return time_length
+

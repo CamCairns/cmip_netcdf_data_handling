@@ -60,30 +60,7 @@ would find the 4 combinationsL
         shared_models = list(set(shared_models).intersection(set(root_list)))
     print "Shared model list", shared_models
 
-    if time_length in ('max','min'):
-        model_size_list = []
-        for experi in experi_list:
-            for freq in freq_list:
-                for realm in realm_list:
-                    for vari in vari_list:
-                        for k, model in enumerate(shared_models):
-                            files = ncd.get_filepath(experi, freq, realm, vari, model, mount_dir=mount_dir)
-                            if files:
-                                model_size_list.append(ncd.find_model_size(files,vari))
-                            else:
-                                model_size_list.append(np.nan)
-#                             print 'Model {} time_length is {}'.format(model, ncd.find_model_size(files,vari))
-        if time_length=='max':
-            time_length = max(model_size_list) 
-        else:
-            time_length = min(model_size_list)
-        if verbose:
-            print 'Maximum model time_length is {}'.format(max(model_size_list))
-            print 'Minimum model time_length is {}'.format(min(model_size_list))
-    else:
-        pass
-    print "The time length of the output array is ", time_length
-
+    time_length = ncd.get_time_dim(experi_list, freq_list, realm_list, vari_list, shared_models, time_length='max')
     files = ncd.get_filepath(experi_list[0], freq_list[0], realm_list[0], vari_list[0], shared_models[0], mount_dir=mount_dir) # Just getting lat and plev dims (we are assuming all models have shared lat and plev coords
     plev, lat, lon, plev_flag, latb, lonb = ncd.load_coord_data(files,load_bnds=load_bnds)
     time_length = ncd.modulo_padding(time_length,12)
