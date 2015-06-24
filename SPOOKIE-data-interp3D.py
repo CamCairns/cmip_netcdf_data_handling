@@ -50,12 +50,7 @@ for i1, experi in enumerate(experi_list):
                             tmp_array_interp[:,:,j,:] = interp_data(plev, lon, plev_common, lon_common, np.squeeze(tmp_array[:,:,j,:]))
 
                         # TIME DATA EXTRACTION
-                        if model=='MPI-ESM-LR': 
-                        # The time data in the MPI SPOOKIE MODEL is corrupted/unwritten. I am making the assumption they are equivalent.
-                        # Havn't yet worked out how to overwrite that netcdf so for now I am using the equivalent AMIP data
-                            time_vector, time_units, time_cal = extract_nc_time(AMIP_files, model_size)
-                        else:
-                            time_vector, time_units, time_cal = extract_nc_time(files, model_size)
+                        time_vector, time_units, time_cal = extract_nc_time(files, model_size)
 
                         # Make directory path
 #                         save_path = os.path.join('/Users/camcairns/', mount, exp_dir + '_lon_interp', experi, freq, realm, vari, model)
