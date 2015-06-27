@@ -390,7 +390,7 @@ def write_nc3D(input_lat, input_latb, input_plev, plev_flag, input_lon, input_lo
 
     # Attributes for nc file
     import time
-    rootgrp.description = 'SPOOKIE data interpolated on to a uniform [lev lat lon] grid. This nc_files is for MODEL: ' + model + '  FREQ: ' + freq + '  EXPERIMENT: ' + experi + '  REALM: ' + realm + '  VARI: ' + vari
+    rootgrp.description = experi + 'data interpolated on to a uniform [lev lat lon] grid. This nc_files is for MODEL: ' + model + '  FREQ: ' + freq + '  EXPERIMENT: ' + experi + '  REALM: ' + realm + '  VARI: ' + vari
     rootgrp.history = 'Created ' + time.ctime(time.time()) + '. Original data sourced from DKRZ EUCLIPSE sever.'
     rootgrp.source = 'Cameron Cairns; email: cam.cairns1@gmail.com'
     latitudes.units = 'degrees north'
