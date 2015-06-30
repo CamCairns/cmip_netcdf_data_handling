@@ -1,14 +1,12 @@
 # Main Program
 from nc_data import *
 
-model_list = ['MPI-ESM-LR'] #['CanAM4','CNRM-AM6', 'CNRM-CM5', 'MIROC5', 'HadGEM2-A', 'MPI-ESM-LR', 'MRI-CGCM3', 'GFDL-HIRAM', 'CESM1-CAM5','CESM-CAM5.1-FV2']
+model_list = ['CanAM4','CNRM-AM6', 'CNRM-CM5', 'MIROC5', 'HadGEM2-A', 'MPI-ESM-LR', 'MRI-CGCM3', 'GFDL-HIRAM', 'CESM1-CAM5','CESM-CAM5.1-FV2']
 freq_list = ['mon']
-experi_list = ['convoffaqua4xCO2','convoffaqua4K','convoffaquaControl'] #['amip4K', 'amip4xCO2', 'aqua4xCO2', 'aqua4K', 'aquaControl'] #[,'convoffamip4xCO2'] #
-AMIP_experi_list = ['aqua4xCO2', 'aqua4K', 'aquaControl']
+experi_list = ['convoffamip']#,'convoffaqua4K','convoffaquaControl'] #['amip4K', 'amip4xCO2', 'aqua4xCO2', 'aqua4K', 'aquaControl'] #[,'convoffamip4xCO2']
 exp_dir = 'SPOOKIE'
 realm_list = ['atmos']
-vari_list = ['ua','uas','va','vas','ta','tas','hur','hus']
-mount = 'mountpoint3'
+vari_list = ['zg'] #,'uas','va','vas','ta','tas','hur','hus']
 
 for i1, experi in enumerate(experi_list):
     for i2, freq in enumerate(freq_list):

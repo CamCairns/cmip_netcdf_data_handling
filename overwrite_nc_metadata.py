@@ -17,6 +17,8 @@ for i1, experi in enumerate(experi_list):
                 files_AMIP = ncd.get_filepath(AMIP_experi_list[i1], freq, realm, vari, 'MPI-ESM-LR')
                 print files_AMIP[0]
                 nc = Dataset(files_AMIP[0],'r')
+#                 time_vect = nc.variables['time'][:]
+#                 time_units = nc.variables['time'].units
                 time_vect = nc.variables['time'][:]
                 time_units = nc.variables['time'].units
                 nc.close
