@@ -29,14 +29,14 @@ for i1, experi in enumerate(experi_list):
                         model_size = find_model_size(files, vari) # find the total time length of the model, use to preallocate a numpy array
                         
                         # PREALLOCATE EMPTY ARRAY
-                        plev, lat, lon, plev_flag = load_coord_data(files)
+                        plev, lat, lon, plev_flag, latb, lonb = load_coord_data(files)
                         tmp_array = empty_array_generator([model_size, len(plev), len(lat)])
 
                         #FIELD DATA EXTRACTION AND CONCATENATION    
                         tmp_array = extract_nc_data(files, vari, tmp_array);
 
                         #INTERPOLATE ONTO COMMON GRID
-                        tmp_array_interp = interp_data(lat, plev, plev_flag, lat_common, plev_common, tmp_array)                    
+                        tmp_array_interp = interp_data(plev,plev_flag,lat,plev_common,lat_common,tmp_array)
                     
                         # TIME DATA EXTRACTION
                         time_vector, time_units, time_cal = extract_nc_time(files, model_size)
