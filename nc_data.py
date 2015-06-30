@@ -200,6 +200,9 @@ def extract_nc_data(files, nc_vari, tmp_array, error_limit=1.0e8,zonal_mean=True
         if zonal_mean:
             tmp[tmp>error_limit]= np.nan; # I'd like to make this code genreal for any variable, use dictionary here to assign different tolerances, maybe extract it from the netcdf file?
             tmp = np.squeeze(np.nanmean(tmp,-1)); # Take a zonal mean, id like to make this more general as well, automatically pick out the lon dimension?
+        if verbose:
+            print 'tmp size', np.shape(tmp)
+            print 'tmp_array size', np.shape(tmp_array)
         tmp_array[model_size_tkr:model_size_tkr+np.size(tmp,0),...] = tmp
         model_size_tkr = model_size_tkr + np.size(tmp,0)
     return tmp_array
