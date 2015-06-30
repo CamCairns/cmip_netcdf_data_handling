@@ -298,7 +298,7 @@ def write_nc(input_lat, input_latb, input_plev, plev_flag, input_array, time_vec
     Returns:
         Nothing, a netcdf file is written at the path specified at save_path
     """
-    units_dict = {'ua': 'm/s', 'va': 'm/s', 'uas': 'm/s', 'vas': 'm/s', 'ta': 'K', 'tas': 'K', 'hur': '%', 'hus': '1'}
+    units_dict = {'ua': 'm/s', 'va': 'm/s', 'uas': 'm/s', 'vas': 'm/s', 'ta': 'K', 'tas': 'K', 'hur': '%', 'hus': '1', 'zg': 'm'}
     # Initiate NETCDF4
     rootgrp = Dataset(save_path, 'w', format='NETCDF4')
 
