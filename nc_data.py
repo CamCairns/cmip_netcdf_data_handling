@@ -12,7 +12,7 @@ from netcdftime import utime, datetime
 location = '/Volumes/SAMSUNG/'
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-def generate_ensemble_list(experi_list, freq_list, realm_list, vari_list, mount_dir='mountpoint'):
+def generate_ensemble_list(experi_list, freq_list, realm_list, vari_list):
     """ Generates an ensemble list at the model directory level
     
     Args: 
@@ -20,7 +20,6 @@ def generate_ensemble_list(experi_list, freq_list, realm_list, vari_list, mount_
         freq: frequency (string)
         realm: realm (string)
         vari: variable (string)
-        mount: mountpoint directory name
         
     Returns:
         A list of file pathnames
@@ -33,9 +32,9 @@ def generate_ensemble_list(experi_list, freq_list, realm_list, vari_list, mount_
                     ensemble_list.append(os.path.join(location, experi, freq, realm, vari))
     return ensemble_list
 
-def get_filepath(experi,freq,realm,vari,model,ensemble='r1i1p1',mount_dir='mountpoint',verbose=False):
+def get_filepath(experi,freq,realm,vari,model,ensemble='r1i1p1',verbose=False):
     """Gets a list of the SPOOKIE filepaths from the directory structure I have created,
-    Directory structure has form SPOOKIE/experi/freq/realm/vari/model/. Operates using a directory mounted up using FUSE OSX
+    Directory structure has form SPOOKIE/experi/freq/realm/vari/model/.
     
     Args:
         experi: {AMIP, SPOOKIE}/{experiment}
@@ -44,7 +43,6 @@ def get_filepath(experi,freq,realm,vari,model,ensemble='r1i1p1',mount_dir='mount
         vari: variable (string)
         model: model (string)
         ensemble: ensemble number (string,optional)
-        mount: mountpoint directory name
         
     Returns:
         A list of file pathnames

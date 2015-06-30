@@ -16,8 +16,7 @@ for i1, experi in enumerate(experi_list):
             for i4, vari in enumerate(vari_list):
                 for i5, model in enumerate(model_list):
                     print experi, freq, realm, vari, model
-                    files = get_filepath(exp_dir + '/' + experi, freq, realm, vari, model, mount_dir = mount)
-                    AMIP_files = get_filepath('AMIP/' + AMIP_experi_list[i1], freq, realm, vari, model, mount_dir = mount)
+                    files = get_filepath(exp_dir + '/' + experi, freq, realm, vari, model)
                     if files:
                         plev_common = [100000, 92500, 85000, 70000, 60000, 50000, 40000, 30000, 25000, 20000, 15000, 10000, 7000, 5000, 3000, 2000, 1000]
                         latb_common= np.linspace(-90,90,65);
@@ -43,7 +42,7 @@ for i1, experi in enumerate(experi_list):
                         time_vector, time_units, time_cal = extract_nc_time(files, model_size)
 
                         # Make directory path
-                        save_path = os.path.join('/Users/camcairns/', mount, exp_dir + '_interp', experi, freq, realm, vari, model)
+                        save_path = os.path.join(location, exp_dir + '_interp', experi, freq, realm, vari, model)
                         mkdir_p(save_path)
                         # Write nc files
                         nc_file = vari + '_' + freq + '_' + model.replace('.','-') + '_' + experi + '_' + exp_dir + '_interp.nc'
