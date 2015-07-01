@@ -9,7 +9,7 @@ from netcdftime import utime, datetime
 # ~~~~~~~~~~~~~ Global path to data archive ~~~~~~~~~~~~~~~~~~~~~~~
 # location = '/Users/camcairns/' + mount_dir + '/'
 # location = '/Volumes/MyBook/'
-location = '/Volumes/SAMSUNG/'
+location = '/Volumes/CAM_HDRIVE/'
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 def generate_ensemble_list(experi_list, freq_list, realm_list, vari_list):
@@ -47,7 +47,6 @@ def get_filepath(experi,freq,realm,vari,model,ensemble='r1i1p1',verbose=False):
     Returns:
         A list of file pathnames
     """
-
     files = []
     if ensemble:
         if verbose:
