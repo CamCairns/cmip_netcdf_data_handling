@@ -83,5 +83,4 @@ would find the 4 combinationsL
                         else:
                             print "The model %s doesn't exist. THAT IS A PROBLEM" % model
     output_array = ncd.reshape_data(output_array,plev_flag)
-    output_array = np.squeeze(output_array)
     return output_array, lat, plev, latb, lonb, shared_models
