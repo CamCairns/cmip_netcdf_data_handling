@@ -239,7 +239,7 @@ def find_model_size(files,nc_variable_name):
     model_size=0;
     for k in range(len(files)):
         nc = Dataset(files[k])
-        tmp = np.squeeze(nc.variables[nc_variable_name][:]) # loading dimensions backwards [time, pfull, lat, lon]
+        tmp = nc.variables[nc_variable_name][:]
         model_size = model_size + np.size(tmp,0);
         nc.close
     return model_size
