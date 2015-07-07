@@ -22,7 +22,7 @@ def generate_ensemble_list(experi_list, freq_list, realm_list, vari_list):
         vari: variable (string)
         
     Returns:
-        A list of file pathnames
+        ensemble_list: A list of file pathnames to the variable subfolder depth
     """
     ensemble_list = []
     for experi in experi_list:
@@ -31,6 +31,26 @@ def generate_ensemble_list(experi_list, freq_list, realm_list, vari_list):
                 for vari in vari_list:
                     ensemble_list.append(os.path.join(location, experi, freq, realm, vari))
     return ensemble_list
+
+def model_intersection(ensemble_list):
+    """ Given a list of lists of models, returns a list of shared models common to all lists
+    
+    The list of dirpaths to the variable subfolder depth is generated using generate_ensemble_list. Each list is all the models that exist for that particular 
+    experi/freq/realm/vari combination. model_intersection simply finds the intersection of all those lists
+    
+    Args: 
+        ensemble_list: list of of directory paths to the variable subfolder level created with generate_ensemble_list
+        
+    Returns:
+        shared_models: a list of shared models common across all the experi/freq/realm/vari combinations
+    """
+    ensemble_models = []
+    for dirpath in ensemble_list:
+        ensemble_models.append(set(os.listdir(dirpath)))
+    for ensemble in ensemble_models:
+        ensemble_models[0].intersection_update(ensemble) 
+    shared_models = list(ensemble_models[0])
+    return shared_models
 
 def get_filepath(experi,freq,realm,vari,model,ensemble='r1i1p1',verbose=False):
     """Gets a list of the SPOOKIE filepaths from the directory structure I have created,

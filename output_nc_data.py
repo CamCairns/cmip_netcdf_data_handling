@@ -3,13 +3,6 @@ import nc_data as ncd
 import os
 import glob
 
-def model_intersection(ensemble_list):
-    ensemble_models = []
-    for dirpath in ensemble_list:
-        ensemble_models.append(set(os.listdir(dirpath)))
-    for ensemble in ensemble_models:
-        ensemble_models[0].intersection_update(ensemble) 
-    shared_models = list(ensemble_models[0])
     return shared_models
     
 def fetch_nc_data(time_length, experi_list, freq_list, realm_list, vari_list, root_list = None, start_month=1, verbose=False):
