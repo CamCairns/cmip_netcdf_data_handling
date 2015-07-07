@@ -3,8 +3,13 @@ import nc_data as ncd
 import os
 import glob
 
+def generate_shared_models(experi_list, freq_list, realm_list, vari_list, root_list = None):
+    ensemble_list = ncd.generate_ensemble_list(experi_list, freq_list, realm_list, vari_list)
+    shared_models = ncd.model_intersection(ensemble_list)
+    if root_list:
+        shared_models = list(set(shared_models).intersection(set(root_list)))
     return shared_models
-    
+
 def fetch_nc_data(time_length, experi_list, freq_list, realm_list, vari_list, root_list = None, start_month=1, verbose=False):
     """Fetches netcdf data from SPOOKIE/AMIP interpolated directory structure.
 
@@ -46,10 +51,7 @@ would find the 4 combinationsL
         output_array: A numpy array with dimensions [month, year, plev, lat, common_models, vari]
         shared_models: A list of the shared models comprising output_array. The list is in the order they appear in the model dimension of output_array
     """
-    ensemble_list = ncd.generate_ensemble_list(experi_list, freq_list, realm_list, vari_list)
-    shared_models = model_intersection(ensemble_list)
-    if root_list:
-        shared_models = list(set(shared_models).intersection(set(root_list)))
+    shared_models = generate_shared_models(experi_list, freq_list, realm_list, vari_list, root_list = root_list)
     print "Shared model list", shared_models
 
     time_length = ncd.get_time_dim(experi_list, freq_list, realm_list, vari_list, shared_models, time_length=time_length)
@@ -57,7 +59,6 @@ would find the 4 combinationsL
     plev, lat, lon, plev_flag, latb, lonb = ncd.load_coord_data(files)
     time_length = ncd.modulo_padding(time_length,12)
     output_array = ncd.empty_array_generator([time_length, len(plev), len(lat), len(lon), len(shared_models), len(experi_list), len(vari_list)])
-    print 'output array shape', np.shape(output_array)
     for i5, experi in enumerate(experi_list):
         for freq in freq_list:
             for realm in realm_list:
@@ -75,4 +76,5 @@ would find the 4 combinationsL
                         else:
                             print "The model %s doesn't exist. THAT IS A PROBLEM" % model
     output_array = ncd.reshape_data(output_array,plev_flag)
+    print 'output array shape', np.shape(output_array)
     return output_array, lat, plev, latb, lonb, shared_models
