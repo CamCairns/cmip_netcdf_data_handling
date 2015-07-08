@@ -3,10 +3,10 @@ from nc_data import *
 
 model_list = ['CanAM4','CNRM-AM6', 'CNRM-CM5', 'MIROC5', 'HadGEM2-A', 'MPI-ESM-LR', 'MRI-CGCM3', 'GFDL-HIRAM', 'CESM1-CAM5','CESM-CAM5.1-FV2']
 freq_list = ['mon']
-experi_list = ['amip', 'amip4K','amip4xCO2', 'aqua4xCO2','aqua4K', 'aquaControl']#,'convoffaqua4K','convoffaquaControl'] #['amip4K', 'amip4xCO2', 'aqua4xCO2', 'aqua4K', 'aquaControl'] #[,'convoffamip4xCO2']
+experi_list = ['amip4K','amip4xCO2', 'aqua4xCO2','aqua4K', 'aquaControl']#,'convoffaqua4K','convoffaquaControl'] #['amip4K', 'amip4xCO2', 'aqua4xCO2', 'aqua4K', 'aquaControl'] #[,'convoffamip4xCO2']
 exp_dir = 'AMIP'
 realm_list = ['atmos']
-vari_list = ['ua','uas','va','vas','ta','tas','hur','hus','zg']
+vari_list = ['uas','vas','tas']#,'vas','tas']#['ua','uas','va','vas','ta','tas','hur','hus','zg']
 ensemble = 'r1i1p1'
 
 for i1, experi in enumerate(experi_list):

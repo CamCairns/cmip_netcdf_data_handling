@@ -538,6 +538,6 @@ def get_time_dim(experi_list, freq_list, realm_list, vari_list, model_list, time
             print 'Minimum model time_length is {}'.format(min(model_size_list))
     else:
         pass
-    print "The time length of the output array is ", time_length
+#     print "The time length of the output array is ", time_length
     return time_length
 
